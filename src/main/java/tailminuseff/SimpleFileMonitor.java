@@ -11,6 +11,7 @@ public class SimpleFileMonitor implements Callable<Void> {
 	private static final Pattern linePattern = Pattern.compile(".*?\r?\n", Pattern.MULTILINE | Pattern.DOTALL);
 	private final List<FileMonitorListener> listeners = new ArrayList<FileMonitorListener>();
 	private final File file;
+	private boolean lastEventWasLine = true;
 
 	public SimpleFileMonitor(File file) {
 		this.file = file;
@@ -25,6 +26,7 @@ public class SimpleFileMonitor implements Callable<Void> {
 	}
 
 	protected void invokeListenersWithAdded(String line) {
+		lastEventWasLine = true;
 		final LineAddedEvent evt = new LineAddedEvent(this, line);
 		for (final FileMonitorListener listener : listeners) {
 			listener.lineRead(evt);
@@ -32,14 +34,17 @@ public class SimpleFileMonitor implements Callable<Void> {
 	}
 
 	protected void invokeListenersWithReset() {
-		final FileResetEvent evt = new FileResetEvent(this);
-		for (final FileMonitorListener listener : listeners) {
-			listener.fileReset(evt);
+		if (lastEventWasLine) {
+			final FileResetEvent evt = new FileResetEvent(this);
+			for (final FileMonitorListener listener : listeners) {
+				listener.fileReset(evt);
+			}
 		}
+		lastEventWasLine = false;
 	}
 
 	@Override
-	public Void call() throws IOException, InterruptedException {
+	public Void call() throws IOException {
 		final StringBuilder stringBuilder = new StringBuilder();
 
 		try {
@@ -69,6 +74,10 @@ public class SimpleFileMonitor implements Callable<Void> {
 							}
 						}
 					}
+				} catch (FileNotFoundException fnfex) {
+					// expected
+					invokeListenersWithReset();
+					Thread.sleep(100);
 				}
 			}
 		} catch (final InterruptedException e) {

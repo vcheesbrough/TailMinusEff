@@ -5,9 +5,10 @@ import static org.junit.Assert.fail;
 
 import java.io.*;
 import java.nio.file.*;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.*;
 
+import junit.framework.AssertionFailedError;
 import mockit.*;
 
 import org.apache.commons.io.FileUtils;
@@ -147,7 +148,7 @@ public class SimpleFileMonitorTests {
 
 		final int lineCount = 100;
 
-		final Future<Void> writer = this.completionService.submit(() -> {
+		this.completionService.submit(() -> {
 			try (OutputStream writer1 = new FileOutputStream(file, true)) {
 				for (int i = 0; i < lineCount; i++) {
 					writer1.write(("Another Line " + i + "\n").getBytes());
@@ -188,7 +189,6 @@ public class SimpleFileMonitorTests {
 	}
 
 	@Test
-	@Ignore
 	public void lineWrittenAfterDeleteGeneratesLineEvent() throws Exception {
 		this.completionService.submit(target);
 		Files.write(file.toPath(), "".getBytes(), StandardOpenOption.APPEND);
@@ -202,9 +202,11 @@ public class SimpleFileMonitorTests {
 
 	private class TestListener implements FileMonitorListener {
 		private final BlockingQueue<Object> event = new LinkedBlockingQueue<>();
+		private final List<Object> allEvents = new LinkedList<Object>();
 
 		@Override
 		public void lineRead(LineAddedEvent evt) {
+			allEvents.add(evt);
 			if (!event.offer(evt)) {
 				throw new IllegalStateException();
 			}
@@ -212,25 +214,39 @@ public class SimpleFileMonitorTests {
 
 		@Override
 		public void fileReset(FileResetEvent evt) {
+			allEvents.add(evt);
 			if (!event.offer(evt)) {
 				throw new IllegalStateException();
 			}
 		}
 
 		public LineAddedEvent getNextEventAsLine() throws InterruptedException, TimeoutException {
-			final LineAddedEvent evt = (LineAddedEvent) event.poll(500, TimeUnit.MILLISECONDS);
-			if (evt == null) {
-				throw new TimeoutException();
+			Object obj = waitForNextEvent();
+			if (obj instanceof LineAddedEvent) {
+				final LineAddedEvent evt = (LineAddedEvent) obj;
+				return evt;
+			} else {
+				throw new AssertionFailedError("Next event was not a line");
 			}
-			return evt;
 		}
 
 		public FileResetEvent getNextEventAsReset() throws InterruptedException, TimeoutException {
-			final FileResetEvent evt = (FileResetEvent) event.poll(500, TimeUnit.MILLISECONDS);
-			if (evt == null) {
+			Object obj = waitForNextEvent();
+			if (obj instanceof FileResetEvent) {
+				final FileResetEvent evt = (FileResetEvent) obj;
+				return evt;
+			} else {
+				throw new AssertionFailedError("Next event was not a reset");
+			}
+		}
+
+		private Object waitForNextEvent() throws InterruptedException, TimeoutException {
+			Object obj = event.poll(200, TimeUnit.MILLISECONDS);
+			if (obj == null) {
 				throw new TimeoutException();
 			}
-			return evt;
+			return obj;
 		}
+
 	}
 }
