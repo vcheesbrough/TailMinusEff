@@ -2,6 +2,8 @@ package tailminuseff;
 
 public interface FileMonitorListener extends java.util.EventListener {
 
-    void lineRead(FileMonitorEvent evt);
+    void lineRead(LineAddedEvent evt);
+
+    void fileReset(FileResetEvent evt);
 
 }
