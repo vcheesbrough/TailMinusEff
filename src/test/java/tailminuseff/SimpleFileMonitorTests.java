@@ -16,7 +16,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.concurrent.*;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 public class SimpleFileMonitorTests {
 
@@ -31,7 +31,7 @@ public class SimpleFileMonitorTests {
     public void Setup() throws IOException {
         file = File.createTempFile("SimpleFileMonitorTests", "");
         file.deleteOnExit();
-        target = new SimpleFileMonitor();
+        target = new SimpleFileMonitor(file);
         target.addListener(mockListener);
         testListener = new TestListener();
         target.addListener(testListener);
@@ -57,7 +57,7 @@ public class SimpleFileMonitorTests {
                 times = 1;
             }
         };
-        this.executorService.submit(target.GetFileMonitorCallable(file));
+        this.executorService.submit(target);
         this.testListener.GetNextEvent();
     }
 
@@ -66,7 +66,7 @@ public class SimpleFileMonitorTests {
             throws Exception {
         FileUtils.writeStringToFile(file, "Hello World\n");
 
-        this.executorService.submit(target.GetFileMonitorCallable(file));
+        this.executorService.submit(target);
 
         assertEquals(target, testListener.GetNextEvent().getSource());
     }
@@ -75,7 +75,7 @@ public class SimpleFileMonitorTests {
     public void singleLineFileCallsListenerWithCorrectLine() throws Exception {
         FileUtils.writeStringToFile(file, "Hello World\n");
 
-        this.executorService.submit(target.GetFileMonitorCallable(file));
+        this.executorService.submit(target);
 
         assertEquals("Hello World", testListener.GetNextEvent().getLine());
     }
@@ -84,7 +84,7 @@ public class SimpleFileMonitorTests {
     public void twoLineFileCallsListenerWithCorrectLine() throws Exception {
         FileUtils.writeStringToFile(file, "Hello World\nAnother Line\n");
 
-        this.executorService.submit(target.GetFileMonitorCallable(file));
+        this.executorService.submit(target);
 
         assertEquals("Hello World", testListener.GetNextEvent().getLine());
         assertEquals("Another Line", testListener.GetNextEvent().getLine());
@@ -94,7 +94,7 @@ public class SimpleFileMonitorTests {
     public void lineAddedToFileCallsListenerOnce() throws Exception {
         Files.write(file.toPath(), "Hello World\n".getBytes(), StandardOpenOption.APPEND);
 
-        this.executorService.submit(target.GetFileMonitorCallable(file));
+        this.executorService.submit(target);
 
         assertEquals("Hello World", testListener.GetNextEvent().getLine());
 
@@ -104,14 +104,30 @@ public class SimpleFileMonitorTests {
     }
 
     @Test
+    public void lineAddedInTwoPartsIsReadAsOneLine() throws Exception {
+        Files.write(file.toPath(), "Hello ".getBytes(), StandardOpenOption.APPEND);
+
+        this.executorService.submit(target);
+
+        try {
+            FileMonitorEvent evt = testListener.GetNextEvent();
+            fail("Did not expect event " + evt);
+        } catch (TimeoutException tex) {
+        }
+
+        Files.write(file.toPath(), "World\n".getBytes(), StandardOpenOption.APPEND);
+        assertEquals("Hello World", testListener.GetNextEvent().getLine());
+    }
+
+    @Test
     public void lotsOflinesAddedToFileCallsListenerMultipleTimes() throws Exception {
         Files.write(file.toPath(), "FirstLine\n".getBytes(), StandardOpenOption.APPEND);
 
-        this.executorService.submit(target.GetFileMonitorCallable(file));
+        this.executorService.submit(target);
 
         assertEquals("FirstLine", testListener.GetNextEvent().getLine());
 
-        final int lineCount = 1000;
+        final int lineCount = 100;
 
         Future<Void> writer = this.executorService.submit(new Callable<Void>() {
             public Void call() throws IOException {
@@ -138,9 +154,11 @@ public class SimpleFileMonitorTests {
             }
         }
 
-        public FileMonitorEvent GetNextEvent() throws InterruptedException {
+        public FileMonitorEvent GetNextEvent() throws InterruptedException, TimeoutException {
             FileMonitorEvent evt = events.poll(500, TimeUnit.MILLISECONDS);
-            assertNotNull("No event appeared within timout", evt);
+            if (evt == null) {
+                throw new TimeoutException();
+            }
             return evt;
         }
     }
