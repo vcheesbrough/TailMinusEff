@@ -1,125 +1,147 @@
 package tailminuseff;
 
-import static org.junit.Assert.*;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-
 import mockit.Expectations;
 import mockit.Mocked;
-import mockit.Verifications;
-
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
+import java.util.concurrent.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class SimpleFileMonitorTests {
 
-	private File file;
-	private SimpleFileMonitor target;
-	@Mocked
-	private FileMonitorListener mockListener;
-	private TestListener testListener;
+    private File file;
+    private SimpleFileMonitor target;
+    @Mocked
+    private FileMonitorListener mockListener;
+    private TestListener testListener;
+    private ExecutorService executorService;
 
-	@Before
-	public void Setup() throws IOException {
-		file = File.createTempFile("SimpleFileMonitorTests", "");
-		file.deleteOnExit();
-		target = new SimpleFileMonitor();
-		target.addListener(mockListener);
-		testListener = new TestListener();
-		target.addListener(testListener);
-	}
+    @Before
+    public void Setup() throws IOException {
+        file = File.createTempFile("SimpleFileMonitorTests", "");
+        file.deleteOnExit();
+        target = new SimpleFileMonitor();
+        target.addListener(mockListener);
+        testListener = new TestListener();
+        target.addListener(testListener);
+        executorService = Executors.newCachedThreadPool();
+    }
 
-	@Test
-	public void emptyFileDoesNotCallListener() throws Exception {
-		new Expectations() {
-			{
-				mockListener.lineRead((FileMonitorEvent) any);
-				times = 0;
-			}
-		};
-		target.GetFileMonitorCallable(file).call();
-	}
+    @After
+    public void Teardown() throws Exception {
+        if (this.executorService != null) {
+            this.executorService.shutdown();
+        }
+        if (file != null) {
+            Files.deleteIfExists(file.toPath());
+        }
+    }
 
-	@Test
-	public void singleLineFileCallsListenerOnce() throws Exception {
-		FileUtils.writeStringToFile(file, "Hello World\n");
-		new Expectations() {
-			{
-				mockListener.lineRead((FileMonitorEvent) any);
-				times = 1;
-			}
-		};
-		target.GetFileMonitorCallable(file).call();
-	}
+    @Test
+    public void singleLineFileCallsListenerOnce() throws Exception {
+        FileUtils.writeStringToFile(file, "Hello World\n");
+        new Expectations() {
+            {
+                mockListener.lineRead((FileMonitorEvent) any);
+                times = 1;
+            }
+        };
+        this.executorService.submit(target.GetFileMonitorCallable(file));
+        this.testListener.GetNextEvent();
+    }
 
-	@Test
-	public void singleLineFileCallsListenerWithCorrectEventSource()
-			throws Exception {
-		FileUtils.writeStringToFile(file, "Hello World\n");
-		target.GetFileMonitorCallable(file).call();
+    @Test
+    public void singleLineFileCallsListenerWithCorrectEventSource()
+            throws Exception {
+        FileUtils.writeStringToFile(file, "Hello World\n");
 
-		assertEquals(target, testListener.GetNextEvent().getSource());
-	}
+        this.executorService.submit(target.GetFileMonitorCallable(file));
 
-	@Test
-	public void singleLineFileCallsListenerWithCorrectLine() throws Exception {
-		FileUtils.writeStringToFile(file, "Hello World\n");
+        assertEquals(target, testListener.GetNextEvent().getSource());
+    }
 
-		target.GetFileMonitorCallable(file).call();
+    @Test
+    public void singleLineFileCallsListenerWithCorrectLine() throws Exception {
+        FileUtils.writeStringToFile(file, "Hello World\n");
 
-		assertEquals("Hello World", testListener.GetNextEvent().getLine());
-	}
+        this.executorService.submit(target.GetFileMonitorCallable(file));
 
-	@Test
-	public void twoLineFileCallsListenerWithCorrectLine() throws Exception {
-		FileUtils.writeStringToFile(file, "Hello World\nAnother Line\n");
-		target.GetFileMonitorCallable(file).call();
+        assertEquals("Hello World", testListener.GetNextEvent().getLine());
+    }
 
-		assertEquals("Hello World", testListener.GetNextEvent().getLine());
-		assertEquals("Another Line", testListener.GetNextEvent().getLine());
-	}
+    @Test
+    public void twoLineFileCallsListenerWithCorrectLine() throws Exception {
+        FileUtils.writeStringToFile(file, "Hello World\nAnother Line\n");
 
-	@Test
-	@Ignore
-	public void lineAddedToFileCallsListenerOnce() throws Exception {
-		FileUtils.writeStringToFile(file, "Hello World\n");
+        this.executorService.submit(target.GetFileMonitorCallable(file));
 
-		ExecutorService service = Executors.newCachedThreadPool();
-		Future<Void> result = service.submit(target
-				.GetFileMonitorCallable(file));
+        assertEquals("Hello World", testListener.GetNextEvent().getLine());
+        assertEquals("Another Line", testListener.GetNextEvent().getLine());
+    }
 
-		assertEquals("Hello World", testListener.GetNextEvent().getLine());
+    @Test
+    public void lineAddedToFileCallsListenerOnce() throws Exception {
+        Files.write(file.toPath(), "Hello World\n".getBytes(), StandardOpenOption.APPEND);
 
-		FileUtils.writeStringToFile(file, "Another Line\n");
+        this.executorService.submit(target.GetFileMonitorCallable(file));
 
-		assertEquals("Another Line", testListener.GetNextEvent().getLine());
-	}
+        assertEquals("Hello World", testListener.GetNextEvent().getLine());
 
-	private class TestListener implements FileMonitorListener {
-		private final BlockingQueue<FileMonitorEvent> events = new LinkedBlockingQueue<FileMonitorEvent>();
+        Files.write(file.toPath(), "Another Line\n".getBytes(), StandardOpenOption.APPEND);
 
-		@Override
-		public void lineRead(FileMonitorEvent evt) {
-			if (!events.offer(evt)) {
-				throw new IllegalStateException();
-			}
-		}
+        assertEquals("Another Line", testListener.GetNextEvent().getLine());
+    }
 
-		public FileMonitorEvent GetNextEvent() throws InterruptedException {
-			FileMonitorEvent evt = events.poll(500, TimeUnit.MILLISECONDS);
-			assertNotNull(evt);
-			return evt;
-		}
-	}
+    @Test
+    public void lotsOflinesAddedToFileCallsListenerMultipleTimes() throws Exception {
+        Files.write(file.toPath(), "FirstLine\n".getBytes(), StandardOpenOption.APPEND);
+
+        this.executorService.submit(target.GetFileMonitorCallable(file));
+
+        assertEquals("FirstLine", testListener.GetNextEvent().getLine());
+
+        final int lineCount = 1000;
+
+        Future<Void> writer = this.executorService.submit(new Callable<Void>() {
+            public Void call() throws IOException {
+                try (OutputStream writer = new FileOutputStream(file, true)) {
+                    for (int i = 0; i < lineCount; i++) {
+                        writer.write(("Another Line " + i + "\n").getBytes());
+                    }
+                }
+                return null;
+            }
+        });
+        for (int i = 0; i < lineCount; i++) {
+            assertEquals("Another Line " + i, testListener.GetNextEvent().getLine());
+        }
+    }
+
+    private class TestListener implements FileMonitorListener {
+        private final BlockingQueue<FileMonitorEvent> events = new LinkedBlockingQueue<FileMonitorEvent>();
+
+        @Override
+        public void lineRead(FileMonitorEvent evt) {
+            if (!events.offer(evt)) {
+                throw new IllegalStateException();
+            }
+        }
+
+        public FileMonitorEvent GetNextEvent() throws InterruptedException {
+            FileMonitorEvent evt = events.poll(500, TimeUnit.MILLISECONDS);
+            assertNotNull("No event appeared within timout", evt);
+            return evt;
+        }
+    }
 }

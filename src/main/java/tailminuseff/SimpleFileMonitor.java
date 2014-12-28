@@ -1,10 +1,6 @@
 package tailminuseff;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -40,13 +36,17 @@ public class SimpleFileMonitor {
 		}
 
 		@Override
-		public Void call() throws FileNotFoundException, IOException {
-			try (BufferedReader reader = new BufferedReader(
+        public Void call() throws FileNotFoundException, IOException, InterruptedException {
+            try (BufferedReader reader = new BufferedReader(
 					new FileReader(file))) {
 				String line = reader.readLine();
-				while (line != null) {
-					invokeListeners(line);
-					line = reader.readLine();
+                while (!Thread.currentThread().isInterrupted()) {
+                    if (line != null) {
+                        invokeListeners(line);
+                    } else {
+                        Thread.sleep(100);
+                    }
+                    line = reader.readLine();
 				}
 			}
 			return null;
