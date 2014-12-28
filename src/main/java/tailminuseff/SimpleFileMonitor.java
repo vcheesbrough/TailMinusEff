@@ -1,14 +1,19 @@
 package tailminuseff;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SimpleFileMonitor implements Callable<Void> {
 
+    private static final Pattern linePattern = Pattern.compile(".*?\r?\n", Pattern.MULTILINE | Pattern.DOTALL);
     private final List<FileMonitorListener> listeners = new ArrayList<FileMonitorListener>();
-
     private final File file;
 
     public SimpleFileMonitor(File file) {
@@ -32,16 +37,24 @@ public class SimpleFileMonitor implements Callable<Void> {
 
     @Override
     public Void call() throws FileNotFoundException, IOException, InterruptedException {
-        try (BufferedReader reader = new BufferedReader(
-                new FileReader(file))) {
-            String line = reader.readLine();
+        StringBuilder stringBuilder = new StringBuilder();
+
+        try (FileReader reader = new FileReader(file)) {
             while (!Thread.currentThread().isInterrupted()) {
-                if (line != null) {
-                    invokeListeners(line);
-                } else {
+                char buffer[] = new char[8192];
+                int bytesRead = reader.read(buffer);
+                if (bytesRead > 0) {
+                    stringBuilder.append(buffer, 0, bytesRead);
+                    Matcher matcher = linePattern.matcher(stringBuilder);
+                    while (matcher.find()) {
+                        String line = stringBuilder.substring(matcher.start(), matcher.end());
+                        invokeListeners(line);
+                        stringBuilder.delete(0, matcher.end());
+                        matcher.reset(stringBuilder);
+                    }
+                } else if (bytesRead == -1) {
                     Thread.sleep(100);
                 }
-                line = reader.readLine();
             }
         }
         return null;

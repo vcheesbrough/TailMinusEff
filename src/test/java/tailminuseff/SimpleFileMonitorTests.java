@@ -77,7 +77,7 @@ public class SimpleFileMonitorTests {
 
         this.executorService.submit(target);
 
-        assertEquals("Hello World", testListener.GetNextEvent().getLine());
+        assertEquals("Hello World\n", testListener.GetNextEvent().getLine());
     }
 
     @Test
@@ -86,8 +86,8 @@ public class SimpleFileMonitorTests {
 
         this.executorService.submit(target);
 
-        assertEquals("Hello World", testListener.GetNextEvent().getLine());
-        assertEquals("Another Line", testListener.GetNextEvent().getLine());
+        assertEquals("Hello World\n", testListener.GetNextEvent().getLine());
+        assertEquals("Another Line\n", testListener.GetNextEvent().getLine());
     }
 
     @Test
@@ -96,11 +96,21 @@ public class SimpleFileMonitorTests {
 
         this.executorService.submit(target);
 
-        assertEquals("Hello World", testListener.GetNextEvent().getLine());
+        assertEquals("Hello World\n", testListener.GetNextEvent().getLine());
 
         Files.write(file.toPath(), "Another Line\n".getBytes(), StandardOpenOption.APPEND);
 
-        assertEquals("Another Line", testListener.GetNextEvent().getLine());
+        assertEquals("Another Line\n", testListener.GetNextEvent().getLine());
+    }
+
+    @Test
+    public void windowsLineEndingsSplitLinesAlso() throws Exception {
+        Files.write(file.toPath(), "Hello World\r\n".getBytes(), StandardOpenOption.APPEND);
+
+        this.executorService.submit(target);
+
+        assertEquals("Hello World\r\n", testListener.GetNextEvent().getLine());
+
     }
 
     @Test
@@ -116,7 +126,7 @@ public class SimpleFileMonitorTests {
         }
 
         Files.write(file.toPath(), "World\n".getBytes(), StandardOpenOption.APPEND);
-        assertEquals("Hello World", testListener.GetNextEvent().getLine());
+        assertEquals("Hello World\n", testListener.GetNextEvent().getLine());
     }
 
     @Test
@@ -125,7 +135,7 @@ public class SimpleFileMonitorTests {
 
         this.executorService.submit(target);
 
-        assertEquals("FirstLine", testListener.GetNextEvent().getLine());
+        assertEquals("FirstLine\n", testListener.GetNextEvent().getLine());
 
         final int lineCount = 100;
 
@@ -140,7 +150,7 @@ public class SimpleFileMonitorTests {
             }
         });
         for (int i = 0; i < lineCount; i++) {
-            assertEquals("Another Line " + i, testListener.GetNextEvent().getLine());
+            assertEquals("Another Line " + i + "\n", testListener.GetNextEvent().getLine());
         }
     }
 
