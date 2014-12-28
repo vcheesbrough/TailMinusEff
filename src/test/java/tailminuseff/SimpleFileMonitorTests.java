@@ -3,31 +3,17 @@ package tailminuseff;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
+import java.io.*;
+import java.nio.file.*;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CompletionService;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
-import mockit.Expectations;
-import mockit.Mocked;
+import mockit.*;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
+
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 public class SimpleFileMonitorTests {
 
@@ -47,7 +33,7 @@ public class SimpleFileMonitorTests {
 		target.addListener(mockListener);
 		testListener = new TestListener();
 		target.addListener(testListener);
-		executorService = Executors.newCachedThreadPool();
+		executorService = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat("SimpleFileMonitorTests-Pool-%d").build());
 		completionService = new ExecutorCompletionService<Void>(executorService);
 	}
 

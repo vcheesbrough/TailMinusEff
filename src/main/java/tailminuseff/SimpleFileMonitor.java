@@ -1,17 +1,10 @@
 package tailminuseff;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.channels.ClosedByInterruptException;
-import java.nio.channels.FileChannel;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.*;
+import java.nio.channels.*;
+import java.util.*;
 import java.util.concurrent.Callable;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.regex.*;
 
 public class SimpleFileMonitor implements Callable<Void> {
 
