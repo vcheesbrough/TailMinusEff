@@ -221,7 +221,7 @@ public class SimpleFileMonitorTests {
 		}
 
 		public LineAddedEvent getNextEventAsLine() throws InterruptedException, TimeoutException {
-			Object obj = waitForNextEvent();
+			final Object obj = waitForNextEvent();
 			if (obj instanceof LineAddedEvent) {
 				final LineAddedEvent evt = (LineAddedEvent) obj;
 				return evt;
@@ -231,7 +231,7 @@ public class SimpleFileMonitorTests {
 		}
 
 		public FileResetEvent getNextEventAsReset() throws InterruptedException, TimeoutException {
-			Object obj = waitForNextEvent();
+			final Object obj = waitForNextEvent();
 			if (obj instanceof FileResetEvent) {
 				final FileResetEvent evt = (FileResetEvent) obj;
 				return evt;
@@ -241,7 +241,7 @@ public class SimpleFileMonitorTests {
 		}
 
 		private Object waitForNextEvent() throws InterruptedException, TimeoutException {
-			Object obj = event.poll(200, TimeUnit.MILLISECONDS);
+			final Object obj = event.poll(200, TimeUnit.MILLISECONDS);
 			if (obj == null) {
 				throw new TimeoutException();
 			}

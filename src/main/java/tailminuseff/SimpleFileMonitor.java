@@ -6,7 +6,7 @@ import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.regex.*;
 
-public class SimpleFileMonitor implements Callable<Void> {
+public class SimpleFileMonitor implements Callable<Void>, FileMonitor {
 
 	private static final Pattern linePattern = Pattern.compile(".*?\r?\n", Pattern.MULTILINE | Pattern.DOTALL);
 	private final List<FileMonitorListener> listeners = new ArrayList<FileMonitorListener>();
@@ -17,10 +17,12 @@ public class SimpleFileMonitor implements Callable<Void> {
 		this.file = file;
 	}
 
+	@Override
 	public void addListener(FileMonitorListener listener) {
 		listeners.add(listener);
 	}
 
+	@Override
 	public void removeListener(FileMonitorListener listener) {
 		listeners.remove(listener);
 	}
@@ -74,7 +76,7 @@ public class SimpleFileMonitor implements Callable<Void> {
 							}
 						}
 					}
-				} catch (FileNotFoundException fnfex) {
+				} catch (final FileNotFoundException fnfex) {
 					// expected
 					invokeListenersWithReset();
 					Thread.sleep(100);

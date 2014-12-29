@@ -1,2 +1,6 @@
-target/**
 /target/
+/coverage-report/
+
+target/classes/tailminuseff/SimpleFileMonitor.class
+
+target/TailMinusEff-0.0.1-SNAPSHOT.jar

@@ -20,6 +20,11 @@
 			<version>1.14</version>
 			<scope>test</scope>
 		</dependency>
+<dependency>
+	<groupId>org.jmockit</groupId>
+	<artifactId>jmockit-coverage</artifactId>
+	<version>1.14</version>
+</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
