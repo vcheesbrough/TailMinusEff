@@ -16,4 +16,9 @@ public class FileLineModelLineAddedEvent extends EventObject {
 		return this.line;
 	}
 
+	@Override
+	public String toString() {
+		return "FileLineModelLineAddedEvent [line=" + line + "]";
+	}
+
 }
