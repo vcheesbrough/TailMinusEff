@@ -1,6 +1,7 @@
 package tailminuseff.ui;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.*;
 
@@ -36,7 +37,7 @@ public class FileLineModelDocumentAdaptorTests {
 
 	@Test
 	public void constructorThrowsExceptionIfModelNotEmpty() {
-		List<String> lines = Arrays.asList(new String[] { "One", "Two" });
+		final List<String> lines = Arrays.asList(new String[] { "One", "Two" });
 		new Expectations() {
 			{
 				mockFileLineModel.getLines();
@@ -46,7 +47,7 @@ public class FileLineModelDocumentAdaptorTests {
 		try {
 			new FileLineModelDocumentAdaptor(mockDocument, mockFileLineModel);
 			fail("Exception was expected");
-		} catch (Exception ex) {
+		} catch (final Exception ex) {
 			// expected
 		}
 	}
@@ -64,7 +65,7 @@ public class FileLineModelDocumentAdaptorTests {
 
 	@Test
 	public void firstlineAddedEventAddsTextToDocument() throws BadLocationException {
-		List<FileLineModelListener> registeredListeners = new ArrayList<FileLineModelListener>();
+		final List<FileLineModelListener> registeredListeners = new ArrayList<FileLineModelListener>();
 		new Expectations() {
 			{
 				mockFileLineModel.addListener(withCapture(registeredListeners));
@@ -84,8 +85,8 @@ public class FileLineModelDocumentAdaptorTests {
 
 	@Test
 	public void firstlineAddedEventWhenDocumentThrowsExceptionIsPropogated() throws BadLocationException {
-		List<FileLineModelListener> registeredListeners = new ArrayList<FileLineModelListener>();
-		BadLocationException thrownException = new BadLocationException("Hello\n", 0);
+		final List<FileLineModelListener> registeredListeners = new ArrayList<FileLineModelListener>();
+		final BadLocationException thrownException = new BadLocationException("Hello\n", 0);
 		new Expectations() {
 			{
 				mockFileLineModel.addListener(withCapture(registeredListeners));
@@ -98,7 +99,7 @@ public class FileLineModelDocumentAdaptorTests {
 		try {
 			registeredListeners.forEach(l -> l.lineAdded(new FileLineModelLineAddedEvent(mockFileLineModel, "Hello\n")));
 			fail("Exception Expected");
-		} catch (RuntimeException ex) {
+		} catch (final RuntimeException ex) {
 			assertEquals(thrownException, ex.getCause());
 		}
 	}

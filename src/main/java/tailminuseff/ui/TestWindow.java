@@ -1,18 +1,12 @@
 package tailminuseff.ui;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.io.File;
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
 
-import javax.swing.JTextPane;
+import javax.swing.*;
 
 import tailminuseff.*;
-import java.awt.Font;
 
 public class TestWindow {
 
@@ -23,15 +17,12 @@ public class TestWindow {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					TestWindow window = new TestWindow();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+		EventQueue.invokeLater(() -> {
+			try {
+				final TestWindow window = new TestWindow();
+				window.frame.setVisible(true);
+			} catch (final Exception e) {
+				e.printStackTrace();
 			}
 		});
 	}
@@ -55,10 +46,10 @@ public class TestWindow {
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		JScrollPane scrollPane = new JScrollPane();
+		final JScrollPane scrollPane = new JScrollPane();
 		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
 
-		JTextPane txtPane = new JTextPane();
+		final JTextPane txtPane = new JTextPane();
 		txtPane.setFont(new Font("Lucida Sans Typewriter", Font.PLAIN, 13));
 		txtPane.setEditable(false);
 		scrollPane.setViewportView(txtPane);

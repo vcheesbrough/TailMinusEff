@@ -1,6 +1,5 @@
 package tailminuseff.ui;
 
-import javax.swing.SwingUtilities;
 import javax.swing.text.*;
 
 import tailminuseff.*;
@@ -31,7 +30,7 @@ public class FileLineModelDocumentAdaptor {
 		public void lineAdded(FileLineModelLineAddedEvent evt) {
 			try {
 				document.insertString(document.getLength(), evt.getLine(), null);
-			} catch (BadLocationException e) {
+			} catch (final BadLocationException e) {
 				throw new RuntimeException(e);
 			}
 		}
