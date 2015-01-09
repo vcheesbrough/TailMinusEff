@@ -19,6 +19,28 @@ public class MultiFileModelTests {
 	@Mocked
 	private ExecutorService mockFileExecutorService;
 
+	@Before
+	public void setUp() throws Exception {
+		new MockUp<ApplicationExecutors>() {
+			@Mock
+			public ExecutorService getFilesExecutorService() {
+				return mockFileExecutorService;
+			}
+		};
+
+		new Expectations() {
+			{
+				FileMonitorFactory.createForFile((File) any);
+				returns(mockMonitor);
+			}
+		};
+		target = new MultiFileModel();
+	}
+
+	@After
+	public void tearDown() throws Exception {
+	}
+
 	@Test
 	public void closeInterruptsRunningFuture(@Mocked File file) throws InterruptedException, ExecutionException {
 		new Expectations() {
@@ -69,27 +91,4 @@ public class MultiFileModelTests {
 			}
 		};
 	}
-
-	@Before
-	public void setUp() throws Exception {
-		new MockUp<ApplicationExecutors>() {
-			@Mock
-			public ExecutorService getFilesExecutorService() {
-				return mockFileExecutorService;
-			}
-		};
-
-		new Expectations() {
-			{
-				FileMonitorFactory.createForFile((File) any);
-				returns(mockMonitor);
-			}
-		};
-		target = new MultiFileModel();
-	}
-
-	@After
-	public void tearDown() throws Exception {
-	}
-
 }

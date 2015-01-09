@@ -4,7 +4,7 @@ import java.io.File;
 
 import mockit.*;
 
-import org.junit.*;
+import org.junit.Test;
 
 public class FileMonitorFactoryTests {
 
@@ -19,13 +19,5 @@ public class FileMonitorFactoryTests {
 				new SimpleFileMonitor(file);
 			}
 		};
-	}
-
-	@Before
-	public void setUp() throws Exception {
-	}
-
-	@After
-	public void tearDown() throws Exception {
 	}
 }

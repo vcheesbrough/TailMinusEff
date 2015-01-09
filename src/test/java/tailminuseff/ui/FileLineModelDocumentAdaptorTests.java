@@ -21,6 +21,22 @@ public class FileLineModelDocumentAdaptorTests {
 	@Mocked
 	private FileLineModel mockFileLineModel;
 
+	@Before
+	public void setUp() throws Exception {
+		new Expectations() {
+			{
+				mockFileLineModel.getLines();
+				returns(Collections.EMPTY_LIST);
+				mockFileLineModel.doInLock((Runnable) any);
+				result = new Delegate() {
+					void delegate(Runnable action) {
+						action.run();
+					}
+				};
+			}
+		};
+	}
+
 	@Test
 	public void constructorAddsLinesIfModelNotEmpty() throws BadLocationException {
 		final List<String> lines = Arrays.asList(new String[] { "One\n" });
@@ -91,25 +107,5 @@ public class FileLineModelDocumentAdaptorTests {
 		} catch (final RuntimeException ex) {
 			assertEquals(thrownException, ex.getCause());
 		}
-	}
-
-	@Before
-	public void setUp() throws Exception {
-		new Expectations() {
-			{
-				mockFileLineModel.getLines();
-				returns(Collections.EMPTY_LIST);
-				mockFileLineModel.doInLock((Runnable) any);
-				result = new Delegate() {
-					void delegate(Runnable action) {
-						action.run();
-					}
-				};
-			}
-		};
-	}
-
-	@After
-	public void tearDown() throws Exception {
 	}
 }

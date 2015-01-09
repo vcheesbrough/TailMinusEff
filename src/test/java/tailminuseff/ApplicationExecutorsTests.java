@@ -3,7 +3,7 @@ package tailminuseff;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
-import org.junit.*;
+import org.junit.Test;
 
 public class ApplicationExecutorsTests {
 
@@ -20,13 +20,5 @@ public class ApplicationExecutorsTests {
 	@Test
 	public void getGeneralExecutorServiceReturnsInstance() {
 		assertNotNull(ApplicationExecutors.getGeneralExecutorService());
-	}
-
-	@Before
-	public void setUp() throws Exception {
-	}
-
-	@After
-	public void tearDown() throws Exception {
 	}
 }

@@ -22,6 +22,25 @@ public class FileLineModelTableModelAdaptorTests {
 	@Mocked
 	private TableModelListener mockTableModelListener;
 
+	@Before
+	public void setUp() throws Exception {
+		new MockUp<SwingUtilities>() {
+			@Mock
+			public void invokeLater(Runnable doRun) {
+				doRun.run();
+			}
+		};
+		final LinkedList<FileLineModelListener> captures = new LinkedList<FileLineModelListener>();
+		new Expectations() {
+			{
+				mockLineModel.addListener(withCapture(captures));
+			}
+		};
+		target = new FileLineModelTableModelAdaptor(mockLineModel);
+		inputListener = captures.peekFirst();
+		target.addTableModelListener(mockTableModelListener);
+	}
+
 	@Test
 	public void getRowCountReturnsNumberOfLinesFromModel() {
 		new Expectations() {
@@ -71,29 +90,6 @@ public class FileLineModelTableModelAdaptorTests {
 				mockTableModelListener.tableChanged((TableModelEvent) any);
 			}
 		};
-	}
-
-	@Before
-	public void setUp() throws Exception {
-		new MockUp<SwingUtilities>() {
-			@Mock
-			public void invokeLater(Runnable doRun) {
-				doRun.run();
-			}
-		};
-		final LinkedList<FileLineModelListener> captures = new LinkedList<FileLineModelListener>();
-		new Expectations() {
-			{
-				mockLineModel.addListener(withCapture(captures));
-			}
-		};
-		target = new FileLineModelTableModelAdaptor(mockLineModel);
-		inputListener = captures.peekFirst();
-		target.addTableModelListener(mockTableModelListener);
-	}
-
-	@After
-	public void tearDown() throws Exception {
 	}
 
 	@Test

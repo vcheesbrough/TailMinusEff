@@ -11,26 +11,16 @@ import org.junit.*;
 
 public class EventListenerListTests {
 
-	private static class EventObjectOne extends EventObject {
-
-		private static final long serialVersionUID = 706653594384232162L;
-
-		public EventObjectOne(Object source) {
-			super(source);
-		}
-	}
-
-	private static class TestableEventListenerList<ListenerType extends EventListener> extends EventListenerList<ListenerType> {
-		public List<ListenerType> getListeners() {
-			return this.listeners;
-		}
-	}
-
-	public static interface TestListener extends EventListener {
-		void eventOne(EventObjectOne evt);
-	}
-
 	private EventListenerList<TestListener> target;
+
+	@Before
+	public void setUp() throws Exception {
+		target = new TestableEventListenerList<EventListenerListTests.TestListener>();
+	}
+
+	@After
+	public void tearDown() throws Exception {
+	}
 
 	@Test
 	public void forEachListenerInvokesOnEachRegisteredListener(@Mocked TestListener mockListenerOne, @Mocked TestListener mockListenerTwo) {
@@ -72,15 +62,6 @@ public class EventListenerListTests {
 		return ((TestableEventListenerList<TestListener>) target).getListeners();
 	}
 
-	@Before
-	public void setUp() throws Exception {
-		target = new TestableEventListenerList<EventListenerListTests.TestListener>();
-	}
-
-	@After
-	public void tearDown() throws Exception {
-	}
-
 	@Test
 	public void testAddListener(@Mocked TestListener testListener) {
 		target.addListener(testListener);
@@ -92,5 +73,24 @@ public class EventListenerListTests {
 		getTargetListeners().add(testListener);
 		target.removeListener(testListener);
 		assertFalse(getTargetListeners().contains(testListener));
+	}
+
+	private static class EventObjectOne extends EventObject {
+
+		private static final long serialVersionUID = 706653594384232162L;
+
+		public EventObjectOne(Object source) {
+			super(source);
+		}
+	}
+
+	private static class TestableEventListenerList<ListenerType extends EventListener> extends EventListenerList<ListenerType> {
+		public List<ListenerType> getListeners() {
+			return this.listeners;
+		}
+	}
+
+	public static interface TestListener extends EventListener {
+		void eventOne(EventObjectOne evt);
 	}
 }
