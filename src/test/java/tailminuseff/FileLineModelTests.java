@@ -2,6 +2,7 @@ package tailminuseff;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.util.LinkedList;
 
 import mockit.*;
@@ -30,6 +31,33 @@ public class FileLineModelTests {
 		target.addListener(mockedListener);
 	}
 
+	@After
+	public void Teardown() {
+		target.removeListener(mockedListener);
+	}
+
+	@Test
+	public void getFileReturnsFileFromMonitor(@Mocked File file) {
+		new Expectations() {
+			{
+				mockMonitor.getFile();
+				returns(file);
+			}
+		};
+		assertEquals(file, target.getFile());
+	}
+
+	@Test
+	public void doInLockCallsRunOnPassedParameter(@Mocked Runnable action) {
+		target.doInLock(action);
+		new Verifications() {
+			{
+				action.run();
+				times = 1;
+			}
+		};
+	}
+
 	@Test
 	public void ConstructorAddsListener() {
 		new Verifications() {
@@ -48,31 +76,25 @@ public class FileLineModelTests {
 	}
 
 	@Test
-	public void resetEventClearsLines() {
-		inputListener.lineRead(new LineAddedEvent(mockMonitor, "Hello World"));
-		inputListener.fileReset(new FileResetEvent(mockMonitor));
-		assertEquals(0, target.getLines().size());
-	}
-
-	@Test
-	public void resetEventFiresEvent() {
-		inputListener.lineRead(new LineAddedEvent(mockMonitor, "Hello World"));
-		inputListener.fileReset(new FileResetEvent(mockMonitor));
-		new Verifications() {
-			{
-				mockedListener.reset((FileLineModelResetEvent) any);
-				times = 1;
-			}
-		};
-	}
-
-	@Test
 	public void lineEventFiresEvent() {
 		inputListener.lineRead(new LineAddedEvent(mockMonitor, "Hello World"));
 		new Verifications() {
 			{
 				mockedListener.lineAdded((FileLineModelLineAddedEvent) any);
 				times = 1;
+			}
+		};
+	}
+
+	@Test
+	public void lineEventFiresEventWithCorrectLine() {
+		inputListener.lineRead(new LineAddedEvent(mockMonitor, "Hello World"));
+		new Verifications() {
+			{
+				FileLineModelLineAddedEvent evt;
+				mockedListener.lineAdded(evt = withCapture());
+				times = 1;
+				assertEquals("Hello World", evt.getLine());
 			}
 		};
 	}
@@ -91,14 +113,20 @@ public class FileLineModelTests {
 	}
 
 	@Test
-	public void lineEventFiresEventWithCorrectLine() {
+	public void resetEventClearsLines() {
 		inputListener.lineRead(new LineAddedEvent(mockMonitor, "Hello World"));
+		inputListener.fileReset(new FileResetEvent(mockMonitor));
+		assertEquals(0, target.getLines().size());
+	}
+
+	@Test
+	public void resetEventFiresEvent() {
+		inputListener.lineRead(new LineAddedEvent(mockMonitor, "Hello World"));
+		inputListener.fileReset(new FileResetEvent(mockMonitor));
 		new Verifications() {
 			{
-				FileLineModelLineAddedEvent evt;
-				mockedListener.lineAdded(evt = withCapture());
+				mockedListener.reset((FileLineModelResetEvent) any);
 				times = 1;
-				assertEquals("Hello World", evt.getLine());
 			}
 		};
 	}

@@ -22,29 +22,6 @@ public class FileLineModelTableModelAdaptorTests {
 	@Mocked
 	private TableModelListener mockTableModelListener;
 
-	@Before
-	public void setUp() throws Exception {
-		new MockUp<SwingUtilities>() {
-			@Mock
-			public void invokeLater(Runnable doRun) {
-				doRun.run();
-			}
-		};
-		final LinkedList<FileLineModelListener> captures = new LinkedList<FileLineModelListener>();
-		new Expectations() {
-			{
-				mockLineModel.addListener(withCapture(captures));
-			}
-		};
-		target = new FileLineModelTableModelAdaptor(mockLineModel);
-		inputListener = captures.peekFirst();
-		target.addTableModelListener(mockTableModelListener);
-	}
-
-	@After
-	public void tearDown() throws Exception {
-	}
-
 	@Test
 	public void getRowCountReturnsNumberOfLinesFromModel() {
 		new Expectations() {
@@ -57,6 +34,21 @@ public class FileLineModelTableModelAdaptorTests {
 			}
 		};
 		assertEquals(2, target.getRowCount());
+	}
+
+	@Test
+	public void getValueAtReturnsValueFromModelIfInRange() {
+		new Expectations() {
+			{
+				final List<String> lines = new ArrayList<String>();
+				lines.add("First Line");
+				lines.add("Second Line");
+				mockLineModel.getLines();
+				returns(lines);
+			}
+		};
+		assertEquals("First Line", target.getValueAt(0, 0));
+		assertEquals("Second Line", target.getValueAt(1, 0));
 	}
 
 	@Test
@@ -81,23 +73,31 @@ public class FileLineModelTableModelAdaptorTests {
 		};
 	}
 
-	@Test
-	public void testGetColumnCount() {
-		assertEquals(1, target.getColumnCount());
+	@Before
+	public void setUp() throws Exception {
+		new MockUp<SwingUtilities>() {
+			@Mock
+			public void invokeLater(Runnable doRun) {
+				doRun.run();
+			}
+		};
+		final LinkedList<FileLineModelListener> captures = new LinkedList<FileLineModelListener>();
+		new Expectations() {
+			{
+				mockLineModel.addListener(withCapture(captures));
+			}
+		};
+		target = new FileLineModelTableModelAdaptor(mockLineModel);
+		inputListener = captures.peekFirst();
+		target.addTableModelListener(mockTableModelListener);
+	}
+
+	@After
+	public void tearDown() throws Exception {
 	}
 
 	@Test
-	public void getValueAtReturnsValueFromModelIfInRange() {
-		new Expectations() {
-			{
-				final List<String> lines = new ArrayList<String>();
-				lines.add("First Line");
-				lines.add("Second Line");
-				mockLineModel.getLines();
-				returns(lines);
-			}
-		};
-		assertEquals("First Line", target.getValueAt(0, 0));
-		assertEquals("Second Line", target.getValueAt(1, 0));
+	public void testGetColumnCount() {
+		assertEquals(1, target.getColumnCount());
 	}
 }

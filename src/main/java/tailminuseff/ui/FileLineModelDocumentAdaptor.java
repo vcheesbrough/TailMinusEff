@@ -9,30 +9,36 @@ public class FileLineModelDocumentAdaptor {
 	private final Document document;
 	private final FileLineModel fileLineModel;
 
-	public FileLineModelDocumentAdaptor(Document document, FileLineModel fileLineModel) {
-		super();
-		if (!fileLineModel.getLines().isEmpty()) {
-			throw new IllegalArgumentException();
-		}
-		this.document = document;
-		this.fileLineModel = fileLineModel;
-		this.fileLineModel.addListener(modelListener);
-	}
-
 	private final FileLineModelListener modelListener = new FileLineModelListener() {
+
+		@Override
+		public void lineAdded(FileLineModelLineAddedEvent evt) {
+			appendLineToDocument(evt.getLine());
+		}
 
 		@Override
 		public void reset(FileLineModelResetEvent evt) {
 			throw new UnsupportedOperationException();
 		}
 
-		@Override
-		public void lineAdded(FileLineModelLineAddedEvent evt) {
-			try {
-				document.insertString(document.getLength(), evt.getLine(), null);
-			} catch (final BadLocationException e) {
-				throw new RuntimeException(e);
-			}
-		}
 	};
+
+	public FileLineModelDocumentAdaptor(Document document, FileLineModel fileLineModel) {
+		super();
+		this.document = document;
+		this.fileLineModel = fileLineModel;
+
+		this.fileLineModel.doInLock(() -> {
+			this.fileLineModel.getLines().forEach(this::appendLineToDocument);
+			this.fileLineModel.addListener(modelListener);
+		});
+	}
+
+	private void appendLineToDocument(String line) {
+		try {
+			document.insertString(document.getLength(), line, null);
+		} catch (final BadLocationException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

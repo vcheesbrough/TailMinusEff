@@ -10,9 +10,6 @@ import tailminuseff.*;
 
 public class TestWindow {
 
-	private JFrame frame;
-	private final FileMonitor monitor;
-
 	/**
 	 * Launch the application.
 	 */
@@ -26,6 +23,10 @@ public class TestWindow {
 			}
 		});
 	}
+
+	private JFrame frame;
+
+	private final FileMonitor monitor;
 
 	/**
 	 * Create the application.

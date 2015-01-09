@@ -1,17 +1,14 @@
 package tailminuseff;
 
 import java.io.File;
-import java.util.*;
 import java.util.concurrent.Callable;
 
-public abstract class FileMonitor implements Callable<Void> {
+import eventutil.*;
 
-	private final List<FileMonitorListener> listeners = new ArrayList<FileMonitorListener>();
+public abstract class FileMonitor implements Callable<Void>, EventProducer<FileMonitorListener> {
+
+	private final EventListenerList<FileMonitorListener> listeners = new EventListenerList<FileMonitorListener>();
 	private final File file;
-
-	public File getFile() {
-		return file;
-	}
 
 	private boolean lastEventWasLine = true;
 
@@ -19,30 +16,32 @@ public abstract class FileMonitor implements Callable<Void> {
 		this.file = file;
 	}
 
+	@Override
 	public void addListener(FileMonitorListener listener) {
-		listeners.add(listener);
+		listeners.addListener(listener);
 	}
 
-	public void removeListener(FileMonitorListener listener) {
-		listeners.remove(listener);
+	public File getFile() {
+		return file;
 	}
 
 	protected void invokeListenersWithAdded(String line) {
 		lastEventWasLine = true;
 		final LineAddedEvent evt = new LineAddedEvent(this, line);
-		for (final FileMonitorListener listener : listeners) {
-			listener.lineRead(evt);
-		}
+		listeners.forEachLisener(listener -> listener.lineRead(evt));
 	}
 
 	protected void invokeListenersWithReset() {
 		if (lastEventWasLine) {
 			final FileResetEvent evt = new FileResetEvent(this);
-			for (final FileMonitorListener listener : listeners) {
-				listener.fileReset(evt);
-			}
+			listeners.forEachLisener(listener -> listener.fileReset(evt));
 		}
 		lastEventWasLine = false;
+	}
+
+	@Override
+	public void removeListener(FileMonitorListener listener) {
+		listeners.removeListener(listener);
 	}
 
 }

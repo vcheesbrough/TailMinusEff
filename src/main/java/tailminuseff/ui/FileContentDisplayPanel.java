@@ -11,6 +11,8 @@ public class FileContentDisplayPanel extends JPanel {
 	private static final long serialVersionUID = -1364890050702175341L;
 	private final JTextPane textPane;
 
+	private FileLineModel fileLineModel;
+
 	/**
 	 * Create the panel.
 	 */
@@ -37,7 +39,6 @@ public class FileContentDisplayPanel extends JPanel {
 		}
 		this.fileLineModel = fileLineModel;
 		new FileLineModelDocumentAdaptor(textPane.getDocument(), this.fileLineModel);
+		setName(this.fileLineModel.getFile().getAbsolutePath());
 	}
-
-	private FileLineModel fileLineModel;
 }

@@ -11,12 +11,6 @@ public class FileLineModelTableModelAdaptor extends AbstractTableModel implement
 
 	private final FileLineModel lineModel;
 
-	public FileLineModelTableModelAdaptor(FileLineModel lineModel) {
-		super();
-		this.lineModel = lineModel;
-		this.lineModel.addListener(listener);
-	}
-
 	private final FileLineModelListener listener = new FileLineModelListener() {
 		@Override
 		public void lineAdded(FileLineModelLineAddedEvent evt) {
@@ -29,14 +23,20 @@ public class FileLineModelTableModelAdaptor extends AbstractTableModel implement
 		}
 	};
 
-	@Override
-	public int getRowCount() {
-		return this.lineModel.getLines().size();
+	public FileLineModelTableModelAdaptor(FileLineModel lineModel) {
+		super();
+		this.lineModel = lineModel;
+		this.lineModel.addListener(listener);
 	}
 
 	@Override
 	public int getColumnCount() {
 		return 1;
+	}
+
+	@Override
+	public int getRowCount() {
+		return this.lineModel.getLines().size();
 	}
 
 	@Override

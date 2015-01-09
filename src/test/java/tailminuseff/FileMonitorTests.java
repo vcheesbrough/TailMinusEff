@@ -18,114 +18,80 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 public abstract class FileMonitorTests<TargetType extends FileMonitor> {
 
+	class TestListener implements FileMonitorListener {
+		private final BlockingQueue<Object> event = new LinkedBlockingQueue<>();
+		private final List<Object> allEvents = new LinkedList<Object>();
+
+		@Override
+		public void fileReset(FileResetEvent evt) {
+			allEvents.add(evt);
+			if (!event.offer(evt)) {
+				throw new IllegalStateException();
+			}
+		}
+
+		public LineAddedEvent getNextEventAsLine() throws InterruptedException, TimeoutException {
+			final Object obj = waitForNextEvent();
+			if (obj instanceof LineAddedEvent) {
+				final LineAddedEvent evt = (LineAddedEvent) obj;
+				return evt;
+			} else {
+				throw new AssertionFailedError("Next event was not a line");
+			}
+		}
+
+		public FileResetEvent getNextEventAsReset() throws InterruptedException, TimeoutException {
+			final Object obj = waitForNextEvent();
+			if (obj instanceof FileResetEvent) {
+				final FileResetEvent evt = (FileResetEvent) obj;
+				return evt;
+			} else {
+				throw new AssertionFailedError("Next event was not a reset");
+			}
+		}
+
+		@Override
+		public void lineRead(LineAddedEvent evt) {
+			allEvents.add(evt);
+			if (!event.offer(evt)) {
+				throw new IllegalStateException();
+			}
+		}
+
+		private Object waitForNextEvent() throws InterruptedException, TimeoutException {
+			final Object obj = event.poll(200, TimeUnit.MILLISECONDS);
+			if (obj == null) {
+				throw new TimeoutException();
+			}
+			return obj;
+		}
+
+	}
+
 	private File file;
 	private TargetType target;
 	@Mocked
 	private FileMonitorListener mockListener;
 	private TestListener testListener;
 	private ExecutorService executorService;
+
 	private CompletionService<Void> completionService;
 
 	public FileMonitorTests() {
 		super();
 	}
 
-	@Before
-	public void Setup() throws IOException {
-		file = File.createTempFile("SimpleFileMonitorTests", ".txt");
-		file.deleteOnExit();
-		target = createTarget(file);
-		target.addListener(mockListener);
-		testListener = new TestListener();
-		target.addListener(testListener);
-		executorService = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat("SimpleFileMonitorTests-Pool-%d").build());
-		completionService = new ExecutorCompletionService<Void>(executorService);
-	}
-
 	protected abstract TargetType createTarget(File file);
 
-	@After
-	public void Teardown() throws Exception {
-		if (this.executorService != null) {
-			final List<Runnable> notExecutedTasks = this.executorService.shutdownNow();
-			if (notExecutedTasks.size() > 0) {
-				fail("Some submitted tasks were not executed");
-			}
-		}
-
-		if (this.completionService != null) {
-			for (Future<Void> future = this.completionService.poll(); future != null; future = this.completionService.poll()) {
-				future.get();
-			}
-		}
-
-		if (file != null) {
-			Files.deleteIfExists(file.toPath());
-		}
-	}
-
 	@Test
-	public void singleLineFileCallsListenerOnce() throws Exception {
-		FileUtils.writeStringToFile(file, "Hello World\n");
-		new Expectations() {
-			{
-				mockListener.lineRead((LineAddedEvent) any);
-				times = 1;
-			}
-		};
-		this.completionService.submit(target);
-		this.testListener.getNextEventAsLine();
-	}
-
-	@Test
-	public void singleLineFileCallsListenerWithCorrectEventSource() throws Exception {
-		FileUtils.writeStringToFile(file, "Hello World\n");
-
+	public void deletedFileGeneratesResetEvent() throws Exception {
 		this.completionService.submit(target);
 
-		assertEquals(target, testListener.getNextEventAsLine().getSource());
-	}
+		Files.write(file.toPath(), "FirstLine\n".getBytes(), StandardOpenOption.APPEND);
+		assertEquals("FirstLine\n", testListener.getNextEventAsLine().getLine());
 
-	@Test
-	public void singleLineFileCallsListenerWithCorrectLine() throws Exception {
-		FileUtils.writeStringToFile(file, "Hello World\n");
-
-		this.completionService.submit(target);
-
-		assertEquals("Hello World\n", testListener.getNextEventAsLine().getLine());
-	}
-
-	@Test
-	public void twoLineFileCallsListenerWithCorrectLine() throws Exception {
-		FileUtils.writeStringToFile(file, "Hello World\nAnother Line\n");
-
-		this.completionService.submit(target);
-
-		assertEquals("Hello World\n", testListener.getNextEventAsLine().getLine());
-		assertEquals("Another Line\n", testListener.getNextEventAsLine().getLine());
-	}
-
-	@Test
-	public void lineAddedToFileCallsListenerOnce() throws Exception {
-		Files.write(file.toPath(), "Hello World\n".getBytes(), StandardOpenOption.APPEND);
-
-		this.completionService.submit(target);
-
-		assertEquals("Hello World\n", testListener.getNextEventAsLine().getLine());
-
-		Files.write(file.toPath(), "Another Line\n".getBytes(), StandardOpenOption.APPEND);
-
-		assertEquals("Another Line\n", testListener.getNextEventAsLine().getLine());
-	}
-
-	@Test
-	public void windowsLineEndingsSplitLinesAlso() throws Exception {
-		Files.write(file.toPath(), "Hello World\r\n".getBytes(), StandardOpenOption.APPEND);
-
-		this.completionService.submit(target);
-
-		assertEquals("Hello World\r\n", testListener.getNextEventAsLine().getLine());
-
+		Files.delete(file.toPath());
+		testListener.getNextEventAsReset();
 	}
 
 	@Test
@@ -142,6 +108,31 @@ public abstract class FileMonitorTests<TargetType extends FileMonitor> {
 
 		Files.write(file.toPath(), "World\n".getBytes(), StandardOpenOption.APPEND);
 		assertEquals("Hello World\n", testListener.getNextEventAsLine().getLine());
+	}
+
+	@Test
+	public void lineAddedToFileCallsListenerOnce() throws Exception {
+		Files.write(file.toPath(), "Hello World\n".getBytes(), StandardOpenOption.APPEND);
+
+		this.completionService.submit(target);
+
+		assertEquals("Hello World\n", testListener.getNextEventAsLine().getLine());
+
+		Files.write(file.toPath(), "Another Line\n".getBytes(), StandardOpenOption.APPEND);
+
+		assertEquals("Another Line\n", testListener.getNextEventAsLine().getLine());
+	}
+
+	@Test
+	public void lineWrittenAfterDeleteGeneratesLineEvent() throws Exception {
+		this.completionService.submit(target);
+		Files.write(file.toPath(), "".getBytes(), StandardOpenOption.APPEND);
+
+		Files.delete(file.toPath());
+		testListener.getNextEventAsReset();
+
+		Files.write(file.toPath(), "ThirdLine\n".getBytes(), StandardOpenOption.CREATE_NEW);
+		assertEquals("ThirdLine\n", testListener.getNextEventAsLine().getLine());
 	}
 
 	@Test
@@ -183,76 +174,86 @@ public abstract class FileMonitorTests<TargetType extends FileMonitor> {
 		}
 	}
 
-	@Test
-	public void deletedFileGeneratesResetEvent() throws Exception {
-		this.completionService.submit(target);
-
-		Files.write(file.toPath(), "FirstLine\n".getBytes(), StandardOpenOption.APPEND);
-		assertEquals("FirstLine\n", testListener.getNextEventAsLine().getLine());
-
-		Files.delete(file.toPath());
-		testListener.getNextEventAsReset();
+	@Before
+	public void Setup() throws IOException {
+		file = File.createTempFile("SimpleFileMonitorTests", ".txt");
+		file.deleteOnExit();
+		target = createTarget(file);
+		target.addListener(mockListener);
+		testListener = new TestListener();
+		target.addListener(testListener);
+		executorService = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat("SimpleFileMonitorTests-Pool-%d").build());
+		completionService = new ExecutorCompletionService<Void>(executorService);
 	}
 
 	@Test
-	public void lineWrittenAfterDeleteGeneratesLineEvent() throws Exception {
+	public void singleLineFileCallsListenerOnce() throws Exception {
+		FileUtils.writeStringToFile(file, "Hello World\n");
+		new Expectations() {
+			{
+				mockListener.lineRead((LineAddedEvent) any);
+				times = 1;
+			}
+		};
 		this.completionService.submit(target);
-		Files.write(file.toPath(), "".getBytes(), StandardOpenOption.APPEND);
-
-		Files.delete(file.toPath());
-		testListener.getNextEventAsReset();
-
-		Files.write(file.toPath(), "ThirdLine\n".getBytes(), StandardOpenOption.CREATE_NEW);
-		assertEquals("ThirdLine\n", testListener.getNextEventAsLine().getLine());
+		this.testListener.getNextEventAsLine();
 	}
 
-	class TestListener implements FileMonitorListener {
-		private final BlockingQueue<Object> event = new LinkedBlockingQueue<>();
-		private final List<Object> allEvents = new LinkedList<Object>();
+	@Test
+	public void singleLineFileCallsListenerWithCorrectEventSource() throws Exception {
+		FileUtils.writeStringToFile(file, "Hello World\n");
 
-		@Override
-		public void lineRead(LineAddedEvent evt) {
-			allEvents.add(evt);
-			if (!event.offer(evt)) {
-				throw new IllegalStateException();
+		this.completionService.submit(target);
+
+		assertEquals(target, testListener.getNextEventAsLine().getSource());
+	}
+
+	@Test
+	public void singleLineFileCallsListenerWithCorrectLine() throws Exception {
+		FileUtils.writeStringToFile(file, "Hello World\n");
+
+		this.completionService.submit(target);
+
+		assertEquals("Hello World\n", testListener.getNextEventAsLine().getLine());
+	}
+
+	@After
+	public void Teardown() throws Exception {
+		if (this.executorService != null) {
+			final List<Runnable> notExecutedTasks = this.executorService.shutdownNow();
+			if (notExecutedTasks.size() > 0) {
+				fail("Some submitted tasks were not executed");
 			}
 		}
 
-		@Override
-		public void fileReset(FileResetEvent evt) {
-			allEvents.add(evt);
-			if (!event.offer(evt)) {
-				throw new IllegalStateException();
+		if (this.completionService != null) {
+			for (Future<Void> future = this.completionService.poll(); future != null; future = this.completionService.poll()) {
+				future.get();
 			}
 		}
 
-		public LineAddedEvent getNextEventAsLine() throws InterruptedException, TimeoutException {
-			final Object obj = waitForNextEvent();
-			if (obj instanceof LineAddedEvent) {
-				final LineAddedEvent evt = (LineAddedEvent) obj;
-				return evt;
-			} else {
-				throw new AssertionFailedError("Next event was not a line");
-			}
+		if (file != null) {
+			Files.deleteIfExists(file.toPath());
 		}
+	}
 
-		public FileResetEvent getNextEventAsReset() throws InterruptedException, TimeoutException {
-			final Object obj = waitForNextEvent();
-			if (obj instanceof FileResetEvent) {
-				final FileResetEvent evt = (FileResetEvent) obj;
-				return evt;
-			} else {
-				throw new AssertionFailedError("Next event was not a reset");
-			}
-		}
+	@Test
+	public void twoLineFileCallsListenerWithCorrectLine() throws Exception {
+		FileUtils.writeStringToFile(file, "Hello World\nAnother Line\n");
 
-		private Object waitForNextEvent() throws InterruptedException, TimeoutException {
-			final Object obj = event.poll(200, TimeUnit.MILLISECONDS);
-			if (obj == null) {
-				throw new TimeoutException();
-			}
-			return obj;
-		}
+		this.completionService.submit(target);
+
+		assertEquals("Hello World\n", testListener.getNextEventAsLine().getLine());
+		assertEquals("Another Line\n", testListener.getNextEventAsLine().getLine());
+	}
+
+	@Test
+	public void windowsLineEndingsSplitLinesAlso() throws Exception {
+		Files.write(file.toPath(), "Hello World\r\n".getBytes(), StandardOpenOption.APPEND);
+
+		this.completionService.submit(target);
+
+		assertEquals("Hello World\r\n", testListener.getNextEventAsLine().getLine());
 
 	}
 }

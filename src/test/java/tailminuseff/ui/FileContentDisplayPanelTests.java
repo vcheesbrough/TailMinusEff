@@ -10,15 +10,15 @@ import tailminuseff.*;
 
 public class FileContentDisplayPanelTests {
 
-	@Before
-	public void setUp() throws Exception {
-	}
-
-	@After
-	public void tearDown() throws Exception {
+	@Test
+	public void getFileLineModelReturnsSetInstance(@Mocked FileLineModel mockModel) {
+		final FileContentDisplayPanel target = new FileContentDisplayPanel();
+		target.setFileLineModel(mockModel);
+		assertSame(mockModel, target.getFileLineModel());
 	}
 
 	@Test
+	@Ignore
 	public void setFileLineModelAddsListener(@Mocked FileLineModel mockModel) {
 		new FileContentDisplayPanel().setFileLineModel(mockModel);
 
@@ -27,13 +27,6 @@ public class FileContentDisplayPanelTests {
 				mockModel.addListener((FileLineModelListener) any);
 			}
 		};
-	}
-
-	@Test
-	public void getFileLineModelReturnsSetInstance(@Mocked FileLineModel mockModel) {
-		final FileContentDisplayPanel target = new FileContentDisplayPanel();
-		target.setFileLineModel(mockModel);
-		assertSame(mockModel, target.getFileLineModel());
 	}
 
 	@Test
@@ -46,5 +39,13 @@ public class FileContentDisplayPanelTests {
 		} catch (final IllegalStateException isex) {
 			// expected
 		}
+	}
+
+	@Before
+	public void setUp() throws Exception {
+	}
+
+	@After
+	public void tearDown() throws Exception {
 	}
 }

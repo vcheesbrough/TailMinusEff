@@ -7,12 +7,13 @@ import org.junit.*;
 
 public class FileLineModelLineAddedEventTests {
 
-	@Before
-	public void setUp() throws Exception {
+	@Test
+	public void getLineReturnsLine(@Mocked FileLineModel model) {
+		assertEquals("Hello", new FileLineModelLineAddedEvent(model, "Hello").getLine());
 	}
 
-	@After
-	public void tearDown() throws Exception {
+	@Before
+	public void setUp() throws Exception {
 	}
 
 	@Test
@@ -20,9 +21,8 @@ public class FileLineModelLineAddedEventTests {
 		new FileLineModelLineAddedEvent(model, "Hello").toString();
 	}
 
-	@Test
-	public void getLineReturnsLine(@Mocked FileLineModel model) {
-		assertEquals("Hello", new FileLineModelLineAddedEvent(model, "Hello").getLine());
+	@After
+	public void tearDown() throws Exception {
 	}
 
 }
