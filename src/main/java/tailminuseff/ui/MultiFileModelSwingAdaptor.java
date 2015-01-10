@@ -1,6 +1,7 @@
 package tailminuseff.ui;
 
 import java.io.File;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingUtilities;
 
@@ -34,10 +35,6 @@ public class MultiFileModelSwingAdaptor implements EventProducer<MultiFileModelS
 		listeners.removeListener(listener);
 	}
 
-	public void closeFile(FileLineModel model) {
-		throw new UnsupportedOperationException();
-	}
-
 	public void openFile(File newFile) {
 		ApplicationExecutors.getGeneralExecutorService().submit(() -> {
 			final FileLineModel newModel = delegate.openFile(newFile);
@@ -46,4 +43,17 @@ public class MultiFileModelSwingAdaptor implements EventProducer<MultiFileModelS
 		});
 	}
 
+	public void closeFile(File file) {
+		ApplicationExecutors.getGeneralExecutorService().submit(() -> {
+			try {
+				final FileLineModel model = delegate.close(file);
+				final FileClosedEvent evt = new FileClosedEvent(this, model);
+				SwingUtilities.invokeLater(() -> listeners.forEachLisener(listener -> listener.fileClosed(evt)));
+			} catch (final InterruptedException ex) {
+				throw new RuntimeException(ex);
+			} catch (final ExecutionException ex) {
+				throw new RuntimeException(ex);
+			}
+		});
+	}
 }

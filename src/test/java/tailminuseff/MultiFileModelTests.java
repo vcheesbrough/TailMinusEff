@@ -54,6 +54,18 @@ public class MultiFileModelTests {
 	}
 
 	@Test
+	public void closeWithFileInterruptsRunningFuture(@Mocked File file) throws InterruptedException, ExecutionException {
+		new Expectations() {
+			{
+				mockFileExecutorService.submit((FileMonitor) any).cancel(true);
+			}
+		};
+		final FileLineModel model = target.openFile(file);
+
+		target.close(file);
+	}
+
+	@Test
 	public void closeWaitsForFuturesResult(@Mocked File file) throws InterruptedException, ExecutionException {
 		new Expectations() {
 			{

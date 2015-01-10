@@ -13,9 +13,6 @@ public class FileContentDisplayPanel extends JPanel {
 
 	private FileLineModel fileLineModel;
 
-	/**
-	 * Create the panel.
-	 */
 	public FileContentDisplayPanel() {
 		setBorder(new EmptyBorder(0, 0, 0, 0));
 		setLayout(new BorderLayout(0, 0));
@@ -39,6 +36,12 @@ public class FileContentDisplayPanel extends JPanel {
 		}
 		this.fileLineModel = fileLineModel;
 		new FileLineModelDocumentAdaptor(textPane.getDocument(), this.fileLineModel);
-		setName(this.fileLineModel.getFile().getAbsolutePath());
+		setName(this.fileLineModel.getFile().getName());
+	}
+
+	public Component createTabComponent() {
+		final FileTabComponent fileTabComponent = new FileTabComponent();
+		fileTabComponent.setModel(getFileLineModel());
+		return fileTabComponent;
 	}
 }

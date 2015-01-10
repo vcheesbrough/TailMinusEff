@@ -1,6 +1,7 @@
 package tailminuseff.ui;
 
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import mockit.*;
 
@@ -27,6 +28,14 @@ public class FileContentDisplayPanelTests {
 				mockModel.addListener((FileLineModelListener) any);
 			}
 		};
+	}
+
+	@Test
+	public void createFileTabComponentReturnsFileTabComponentWithCorrectModel(@Mocked FileLineModel mockModel) {
+		final FileContentDisplayPanel target = new FileContentDisplayPanel();
+		target.setFileLineModel(mockModel);
+		assertTrue(target.createTabComponent() instanceof FileTabComponent);
+		assertSame(mockModel, ((FileTabComponent) target.createTabComponent()).getModel());
 	}
 
 	@Test

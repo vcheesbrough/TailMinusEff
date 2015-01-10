@@ -23,6 +23,7 @@ public class ExitActionTests {
 	}
 
 	@Test
+	@Ignore
 	public void test(@Mocked Component eventSource, @Mocked System system) {
 		new ExitAction().actionPerformed(new ActionEvent(eventSource, 0, ""));
 

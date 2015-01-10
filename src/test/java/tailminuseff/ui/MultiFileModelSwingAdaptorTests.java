@@ -1,10 +1,11 @@
 package tailminuseff.ui;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.*;
 
 import javax.swing.SwingUtilities;
 
@@ -64,6 +65,40 @@ public class MultiFileModelSwingAdaptorTests {
 	}
 
 	@Test
+	public void closeWithFileDelegatesToDelegate(@Mocked File file) throws InterruptedException, ExecutionException {
+		target.closeFile(file);
+		new Verifications() {
+			{
+				mockDelegate.close(file);
+				times = 1;
+			}
+		};
+	}
+
+	@Test
+	public void closeGeneratesEvent(@Mocked File file) throws InterruptedException, ExecutionException {
+		target.closeFile(file);
+		new Verifications() {
+			{
+				mockListener.fileClosed((FileClosedEvent) any);
+				times = 1;
+			}
+		};
+	}
+
+	@Test
+	public void closeGeneratesEventWithModel(@Mocked File file) throws InterruptedException, ExecutionException {
+		target.closeFile(file);
+		new Verifications() {
+			{
+				FileClosedEvent evt;
+				mockListener.fileClosed(evt = withCapture());
+				assertNotNull(evt.getFileLineModel());
+			}
+		};
+	}
+
+	@Test
 	public void openGeneratesEventWithDelegateReturnValue(@Mocked File file) {
 		final List<FileOpenedEvent> capturedEvents = new ArrayList<FileOpenedEvent>();
 		new Expectations() {
@@ -82,4 +117,5 @@ public class MultiFileModelSwingAdaptorTests {
 	public void getInstqnceReturnsSameInstanceEachTime() {
 		assertEquals(MultiFileModelSwingAdaptor.getInstance(), MultiFileModelSwingAdaptor.getInstance());
 	}
+
 }

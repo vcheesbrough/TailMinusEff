@@ -16,6 +16,7 @@ public class MainFrame extends JFrame {
 		EventQueue.invokeLater(() -> {
 			try {
 				System.setProperty("apple.laf.useScreenMenuBar", "true");
+				// UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 				final MainFrame frame = new MainFrame();
 				frame.setVisible(true);
 			} catch (final Exception e) {
@@ -31,15 +32,31 @@ public class MainFrame extends JFrame {
 
 	private final Action openAction = new OpenFileAction();
 
-	private final MultiFileModelSwingAdaptorListener modelListener = evt -> {
-		final FileContentDisplayPanel panel = new FileContentDisplayPanel();
-		panel.setFileLineModel(evt.getFileLineModel());
-		tabbedPane.add(panel);
+	private final MultiFileModelSwingAdaptorListener modelListener = new MultiFileModelSwingAdaptorListener() {
+
+		@Override
+		public void fileOpened(FileOpenedEvent evt) {
+			final FileContentDisplayPanel panel = new FileContentDisplayPanel();
+			panel.setFileLineModel(evt.getFileLineModel());
+			tabbedPane.add(panel);
+			tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(panel), panel.createTabComponent());
+		}
+
+		@Override
+		public void fileClosed(FileClosedEvent evt) {
+			for (final Component component : tabbedPane.getComponents()) {
+				if (component instanceof FileContentDisplayPanel) {
+					final FileContentDisplayPanel panel = (FileContentDisplayPanel) component;
+					if (evt.getFileLineModel().equals(panel.getFileLineModel())) {
+						tabbedPane.remove(component);
+						break;
+					}
+				}
+			}
+		}
 	};
 
-	/**
-	 * Create the frame.
-	 */
+	@SuppressWarnings("unused")
 	public MainFrame() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 602, 455);
