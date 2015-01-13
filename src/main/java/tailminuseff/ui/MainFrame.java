@@ -1,10 +1,12 @@
 package tailminuseff.ui;
 
 import java.awt.*;
+import java.awt.event.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import tailminuseff.config.ConfigurationFactory;
 import tailminuseff.ui.actions.*;
 
 public class MainFrame extends JFrame {
@@ -56,6 +58,20 @@ public class MainFrame extends JFrame {
 		}
 	};
 
+	private final ComponentListener boundsListener = new ComponentAdapter() {
+
+		@Override
+		public void componentResized(ComponentEvent e) {
+			ConfigurationFactory.getInstance().getConfiguration().setMainWindowBounds(getBounds());
+		}
+
+		@Override
+		public void componentMoved(ComponentEvent e) {
+			ConfigurationFactory.getInstance().getConfiguration().setMainWindowBounds(getBounds());
+		}
+
+	};
+
 	@SuppressWarnings("unused")
 	public MainFrame() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -79,5 +95,15 @@ public class MainFrame extends JFrame {
 
 		final JMenuItem menuItem = fileMenu.add(openAction);
 		MultiFileModelSwingAdaptor.getInstance().addListener(modelListener);
+
+		addComponentListener(boundsListener);
+		initializeBounds();
+	}
+
+	private void initializeBounds() {
+		final Rectangle configBounds = ConfigurationFactory.getInstance().getConfiguration().getMainWindowBounds();
+		if (configBounds != null) {
+			setBounds(configBounds);
+		}
 	}
 }
