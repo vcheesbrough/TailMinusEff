@@ -21,4 +21,14 @@ public class ApplicationExecutorsTests {
 	public void getGeneralExecutorServiceReturnsInstance() {
 		assertNotNull(ApplicationExecutors.getGeneralExecutorService());
 	}
+
+	@Test
+	public void getScheduledExecutorServiceReturnsInstance() {
+		assertNotNull(ApplicationExecutors.getScheduledExecutorService());
+	}
+
+	@Test
+	public void getScheduledExecutorServiceReturnsSameInstanceEachTime() {
+		assertSame(ApplicationExecutors.getScheduledExecutorService(), ApplicationExecutors.getScheduledExecutorService());
+	}
 }
