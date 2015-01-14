@@ -2,9 +2,11 @@ package tailminuseff.config;
 
 import java.awt.Rectangle;
 import java.beans.*;
-import java.io.Serializable;
+import java.io.*;
 
 public class Configuration implements Serializable {
+
+	private static final String OPEN_DIALOG_DIRECTORY = "openDialogDirectory";
 
 	public static final String MAIN_WINDOW_BOUNDS = "mainWindowBounds";
 
@@ -22,6 +24,18 @@ public class Configuration implements Serializable {
 		final Rectangle oldValue = this.mainWindowBounds;
 		this.mainWindowBounds = mainWindowBounds;
 		propertyChangeSupport.firePropertyChange(MAIN_WINDOW_BOUNDS, oldValue, this.mainWindowBounds);
+	}
+
+	private File openDialogDirectory = new File(System.getProperty("user.home"));
+
+	public File getOpenDialogDirectory() {
+		return openDialogDirectory;
+	}
+
+	public void setOpenDialogDirectory(File openDialogDirectory) {
+		final File oldValue = this.openDialogDirectory;
+		this.openDialogDirectory = openDialogDirectory;
+		propertyChangeSupport.firePropertyChange(OPEN_DIALOG_DIRECTORY, oldValue, this.openDialogDirectory);
 	}
 
 	public void addPropertyChangeListener(String property, PropertyChangeListener listener) {

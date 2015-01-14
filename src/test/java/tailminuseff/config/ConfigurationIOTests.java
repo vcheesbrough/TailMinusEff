@@ -12,7 +12,7 @@ import org.junit.Test;
 public class ConfigurationIOTests {
 
 	@Test
-	public void mainWindowBoundsCanBeWrittenAndRead() {
+	public void mainWindowBoundsCanBeWrittenAndRead() throws ClassNotFoundException, IOException {
 		final Configuration config = new Configuration();
 		final Rectangle bounds = new Rectangle(10, 20, 50, 100);
 		config.setMainWindowBounds(bounds);
@@ -23,6 +23,20 @@ public class ConfigurationIOTests {
 		final Configuration read = new Configuration();
 		ConfigurationIO.readInto(bais, read);
 		assertEquals(bounds, read.getMainWindowBounds());
+	}
+
+	@Test
+	public void openDialogDirectoryCanBeWrittenAndRead() throws IOException, ClassNotFoundException {
+		final Configuration config = new Configuration();
+		final File dir = new File("./openFileDialog");
+		config.setOpenDialogDirectory(dir);
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ConfigurationIO.write(baos, config);
+		ConfigurationIO.write(System.out, config);
+		final ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+		final Configuration read = new Configuration();
+		ConfigurationIO.readInto(bais, read);
+		assertEquals(dir, read.getOpenDialogDirectory());
 	}
 
 	@Test
@@ -38,7 +52,7 @@ public class ConfigurationIOTests {
 	}
 
 	@Test
-	public void readIntoFromDefaultFileReadsFromFileInputStreamWithCorrectFile(@Injectable FileInputStream fis) throws FileNotFoundException, IOException {
+	public void readIntoFromDefaultFileReadsFromFileInputStreamWithCorrectFile(@Injectable FileInputStream fis) throws FileNotFoundException, IOException, ClassNotFoundException {
 		new MockUp<ConfigurationIO>() {
 			@Mock
 			public void readInto(InputStream in, Configuration destination) {

@@ -19,17 +19,20 @@ public class ConfigurationFactory {
 			// fine ignore this
 		} catch (final IOException ioex) {
 			throw new RuntimeException(ioex);
+		} catch (final ClassNotFoundException e) {
+			throw new RuntimeException(e);
 		}
-		c.addPropertyChangeListener(configurationListener);
+		final PropertyChangeEventDebouncer debouncer = new PropertyChangeEventDebouncer();
+		c.addPropertyChangeListener(debouncer.getInputListener());
+		debouncer.addPropertyChangeListener(configurationListener);
 		return c;
 	}
 
 	private Configuration configuration;
 
 	private final PropertyChangeListener configurationListener = evt -> {
-		final Configuration c = (Configuration) evt.getSource();
 		try {
-			ConfigurationIO.writeToDefaultFile(c);
+			ConfigurationIO.writeToDefaultFile(configuration);
 		} catch (final IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

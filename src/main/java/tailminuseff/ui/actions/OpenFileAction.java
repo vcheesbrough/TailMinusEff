@@ -2,10 +2,10 @@ package tailminuseff.ui.actions;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.io.File;
 
 import javax.swing.*;
 
+import tailminuseff.config.ConfigurationFactory;
 import tailminuseff.ui.MultiFileModelSwingAdaptor;
 
 public class OpenFileAction extends AbstractAction {
@@ -19,8 +19,9 @@ public class OpenFileAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		final JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+		fileChooser.setCurrentDirectory(ConfigurationFactory.getInstance().getConfiguration().getOpenDialogDirectory());
 		final int result = fileChooser.showOpenDialog((Component) e.getSource());
+		ConfigurationFactory.getInstance().getConfiguration().setOpenDialogDirectory(fileChooser.getCurrentDirectory());
 		if (result == JFileChooser.APPROVE_OPTION) {
 			MultiFileModelSwingAdaptor.getInstance().openFile(fileChooser.getSelectedFile());
 		}

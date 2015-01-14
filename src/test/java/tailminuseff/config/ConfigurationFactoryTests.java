@@ -26,7 +26,7 @@ public class ConfigurationFactoryTests {
 	}
 
 	@Test
-	public void configurationIOThrowsFileNotFoundExceptionIsIgnored() throws IOException {
+	public void configurationIOThrowsFileNotFoundExceptionIsIgnored() throws IOException, ClassNotFoundException {
 		new Expectations() {
 			{
 				ConfigurationIO.readIntoFromDefaultFile((Configuration) any);
