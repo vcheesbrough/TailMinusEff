@@ -4,27 +4,32 @@ import java.io.*;
 
 public class ConfigurationIO {
 
-	public static final String DEFAULT_FILE = ".tailminuseff.config";
+	private final File file;
 
-	public static void writeToDefaultFile(Configuration c) throws FileNotFoundException, IOException {
-		try (FileOutputStream fos = new FileOutputStream(new File(System.getProperty("user.home"), DEFAULT_FILE))) {
+	public ConfigurationIO(File file) {
+		super();
+		this.file = file;
+	}
+
+	public void writeToDefaultFile(Configuration c) throws FileNotFoundException, IOException {
+		try (FileOutputStream fos = new FileOutputStream(this.file)) {
 			write(fos, c);
 		}
 	}
 
-	public static void write(OutputStream out, Configuration config) throws IOException {
+	public void write(OutputStream out, Configuration config) throws IOException {
 		try (ObjectOutputStream encoder = new ObjectOutputStream(out)) {
 			encoder.writeObject(config);
 		}
 	}
 
-	public static void readIntoFromDefaultFile(Configuration c) throws FileNotFoundException, IOException, ClassNotFoundException {
-		try (FileInputStream fin = new FileInputStream(new File(System.getProperty("user.home"), DEFAULT_FILE))) {
+	public void readIntoFromDefaultFile(Configuration c) throws FileNotFoundException, IOException, ClassNotFoundException {
+		try (FileInputStream fin = new FileInputStream(this.file)) {
 			readInto(fin, c);
 		}
 	}
 
-	public static void readInto(InputStream in, Configuration destination) throws IOException, ClassNotFoundException {
+	public void readInto(InputStream in, Configuration destination) throws IOException, ClassNotFoundException {
 		try (ObjectInputStream decoder = new ObjectInputStream(in)) {
 			final Configuration read = (Configuration) decoder.readObject();
 			destination.setMainWindowBounds(read.getMainWindowBounds());

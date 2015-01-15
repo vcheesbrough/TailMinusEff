@@ -29,7 +29,7 @@ public class ConfigurationFactoryTests {
 	public void configurationIOThrowsFileNotFoundExceptionIsIgnored() throws IOException, ClassNotFoundException {
 		new Expectations() {
 			{
-				ConfigurationIO.readIntoFromDefaultFile((Configuration) any);
+				configurationIO.readIntoFromDefaultFile((Configuration) any);
 				result = new FileNotFoundException();
 			}
 		};

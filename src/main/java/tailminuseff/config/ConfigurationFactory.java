@@ -4,6 +4,10 @@ import java.beans.PropertyChangeListener;
 import java.io.*;
 
 public class ConfigurationFactory {
+	public static final File DEFAULT_FILE = new File(System.getProperty("user.home"), ".tailminuseff.config");
+
+	private final ConfigurationIO configurationIO = new ConfigurationIO(DEFAULT_FILE);
+
 	public synchronized Configuration getConfiguration() {
 		if (configuration == null) {
 			configuration = createConfiguration();
@@ -14,7 +18,7 @@ public class ConfigurationFactory {
 	private Configuration createConfiguration() {
 		final Configuration c = new Configuration();
 		try {
-			ConfigurationIO.readIntoFromDefaultFile(c);
+			configurationIO.readIntoFromDefaultFile(c);
 		} catch (final FileNotFoundException fnfex) {
 			// fine ignore this
 		} catch (final IOException ioex) {
@@ -32,7 +36,7 @@ public class ConfigurationFactory {
 
 	private final PropertyChangeListener configurationListener = evt -> {
 		try {
-			ConfigurationIO.writeToDefaultFile(configuration);
+			configurationIO.writeToDefaultFile(configuration);
 		} catch (final IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
