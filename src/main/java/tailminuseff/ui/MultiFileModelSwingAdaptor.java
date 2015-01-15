@@ -6,6 +6,7 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.SwingUtilities;
 
 import tailminuseff.*;
+import tailminuseff.config.*;
 import eventutil.*;
 
 public class MultiFileModelSwingAdaptor implements EventProducer<MultiFileModelSwingAdaptorListener> {
@@ -23,6 +24,7 @@ public class MultiFileModelSwingAdaptor implements EventProducer<MultiFileModelS
 	}
 
 	MultiFileModelSwingAdaptor() {
+		new OpenFilesConfigHandler(ConfigurationFactory.getInstance().getConfiguration());
 	}
 
 	@Override
@@ -55,5 +57,28 @@ public class MultiFileModelSwingAdaptor implements EventProducer<MultiFileModelS
 				throw new RuntimeException(ex);
 			}
 		});
+	}
+
+	private class OpenFilesConfigHandler {
+		private final Configuration configuration;
+
+		public OpenFilesConfigHandler(Configuration config) {
+			this.configuration = config;
+			this.configuration.getOpenFiles().forEach(f -> openFile(f));
+			addListener(configWriter);
+		}
+
+		private final MultiFileModelSwingAdaptorListener configWriter = new MultiFileModelSwingAdaptorListener() {
+
+			@Override
+			public void fileOpened(FileOpenedEvent evt) {
+				OpenFilesConfigHandler.this.configuration.setOpenFiles(delegate.getOpenFiles());
+			}
+
+			@Override
+			public void fileClosed(FileClosedEvent evt) {
+				OpenFilesConfigHandler.this.configuration.setOpenFiles(delegate.getOpenFiles());
+			}
+		};
 	}
 }

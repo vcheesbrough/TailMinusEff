@@ -14,6 +14,7 @@ import mockit.*;
 import org.junit.*;
 
 import tailminuseff.*;
+import tailminuseff.config.ConfigurationIO;
 
 import com.google.common.util.concurrent.MoreExecutors;
 
@@ -26,6 +27,9 @@ public class MultiFileModelSwingAdaptorTests {
 
 	@Mocked
 	private MultiFileModelSwingAdaptorListener mockListener;
+
+	@Mocked
+	private ConfigurationIO mockConfigurationIO;
 
 	@Before
 	public void setUp() throws Exception {
@@ -117,5 +121,4 @@ public class MultiFileModelSwingAdaptorTests {
 	public void getInstqnceReturnsSameInstanceEachTime() {
 		assertEquals(MultiFileModelSwingAdaptor.getInstance(), MultiFileModelSwingAdaptor.getInstance());
 	}
-
 }

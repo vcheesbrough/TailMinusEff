@@ -34,6 +34,7 @@ public class ConfigurationIO {
 			final Configuration read = (Configuration) decoder.readObject();
 			destination.setMainWindowBounds(read.getMainWindowBounds());
 			destination.setOpenDialogDirectory(read.getOpenDialogDirectory());
+			destination.setOpenFiles(read.getOpenFiles());
 		}
 	}
 }

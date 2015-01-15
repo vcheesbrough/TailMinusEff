@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.awt.Rectangle;
 import java.io.*;
+import java.util.*;
 
 import mockit.*;
 
@@ -26,13 +27,7 @@ public class ConfigurationIOTests {
 		final Configuration config = new Configuration();
 		final Rectangle bounds = new Rectangle(10, 20, 50, 100);
 		config.setMainWindowBounds(bounds);
-		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		target.write(baos, config);
-		target.write(System.out, config);
-		final ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-		final Configuration read = new Configuration();
-		target.readInto(bais, read);
-		assertEquals(bounds, read.getMainWindowBounds());
+		assertEquals(bounds, writeRead(config).getMainWindowBounds());
 	}
 
 	@Test
@@ -40,13 +35,24 @@ public class ConfigurationIOTests {
 		final Configuration config = new Configuration();
 		final File dir = new File("./openFileDialog");
 		config.setOpenDialogDirectory(dir);
+		assertEquals(dir, writeRead(config).getOpenDialogDirectory());
+	}
+
+	@Test
+	public void openFielsCanBeWrittenAndRead() throws IOException, ClassNotFoundException {
+		final List<File> input = Arrays.asList(new File[] { new File("./file1"), new File("./file2") });
+		final Configuration config = new Configuration();
+		config.setOpenFiles(input);
+		assertEquals(input, writeRead(config).getOpenFiles());
+	}
+
+	private Configuration writeRead(Configuration input) throws IOException, ClassNotFoundException {
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		target.write(baos, config);
-		target.write(System.out, config);
+		target.write(baos, input);
 		final ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
 		final Configuration read = new Configuration();
 		target.readInto(bais, read);
-		assertEquals(dir, read.getOpenDialogDirectory());
+		return read;
 	}
 
 	@Test

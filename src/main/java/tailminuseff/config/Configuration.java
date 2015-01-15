@@ -3,8 +3,11 @@ package tailminuseff.config;
 import java.awt.Rectangle;
 import java.beans.*;
 import java.io.*;
+import java.util.*;
 
 public class Configuration implements Serializable {
+
+	private static final String OPEN_FILES = "openFiles";
 
 	private static final String OPEN_DIALOG_DIRECTORY = "openDialogDirectory";
 
@@ -36,6 +39,18 @@ public class Configuration implements Serializable {
 		final File oldValue = this.openDialogDirectory;
 		this.openDialogDirectory = openDialogDirectory;
 		propertyChangeSupport.firePropertyChange(OPEN_DIALOG_DIRECTORY, oldValue, this.openDialogDirectory);
+	}
+
+	private List<File> openFiles = new ArrayList<File>();
+
+	public List<File> getOpenFiles() {
+		return Collections.unmodifiableList(openFiles);
+	}
+
+	public void setOpenFiles(List<File> openFiles) {
+		final List<File> oldValue = this.getOpenFiles();
+		this.openFiles = new ArrayList<File>(openFiles);
+		propertyChangeSupport.firePropertyChange(OPEN_FILES, oldValue, this.openFiles);
 	}
 
 	public void addPropertyChangeListener(String property, PropertyChangeListener listener) {

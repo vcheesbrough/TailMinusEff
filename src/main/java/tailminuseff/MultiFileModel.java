@@ -7,6 +7,7 @@ import java.util.concurrent.*;
 public class MultiFileModel {
 	private final Map<FileMonitor, Future<Void>> futuresByMonitor = new HashMap<FileMonitor, Future<Void>>();
 	private final Map<File, FileLineModel> modelsByFile = new HashMap<File, FileLineModel>();
+	private final List<File> modelsInOrder = new ArrayList<File>();
 
 	public synchronized FileLineModel openFile(File newFile) {
 		final FileMonitor m = FileMonitorFactory.createForFile(newFile);
@@ -14,12 +15,14 @@ public class MultiFileModel {
 		futuresByMonitor.put(m, future);
 		final FileLineModel model = new FileLineModel(m);
 		modelsByFile.put(newFile, model);
+		modelsInOrder.add(newFile);
 		return model;
 	}
 
 	public synchronized void close(FileLineModel fileLineModel) throws InterruptedException, ExecutionException {
 		final Future<Void> future = futuresByMonitor.remove(fileLineModel.getFileMonitor());
 		modelsByFile.remove(fileLineModel.getFile());
+		modelsInOrder.remove(fileLineModel.getFile());
 		future.cancel(true);
 		try {
 			future.get();
@@ -32,5 +35,9 @@ public class MultiFileModel {
 		final FileLineModel fileLineModel = modelsByFile.get(file);
 		close(fileLineModel);
 		return fileLineModel;
+	}
+
+	public synchronized List<File> getOpenFiles() {
+		return this.modelsInOrder;
 	}
 }
