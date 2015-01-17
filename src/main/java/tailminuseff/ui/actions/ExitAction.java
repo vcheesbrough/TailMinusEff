@@ -2,8 +2,10 @@ package tailminuseff.ui.actions;
 
 import java.awt.event.ActionEvent;
 
+import javax.inject.Singleton;
 import javax.swing.AbstractAction;
 
+@Singleton
 public class ExitAction extends AbstractAction {
 	private static final long serialVersionUID = -3203743002084752721L;
 

@@ -2,6 +2,7 @@ package tailminuseff.ui;
 
 import java.awt.*;
 
+import javax.inject.Inject;
 import javax.swing.*;
 
 import tailminuseff.*;
@@ -34,7 +35,6 @@ public class FileTabComponent extends JPanel {
 		closeButton.setBorderPainted(false);
 		closeButton.setContentAreaFilled(false);
 		closeButton.setHideActionText(true);
-		closeButton.setAction(closeFileAction);
 		closeButton.setDefaultCapable(false);
 		closeButton.setFocusable(false);
 		// closeButton.putClientProperty("JButton.buttonType", "recessed");
@@ -57,6 +57,10 @@ public class FileTabComponent extends JPanel {
 		this.closeButton.setActionCommand(model.getFile().getAbsolutePath());
 	}
 
+	@Inject
+	public void setCloseFileAction(CloseFileAction action) {
+		closeButton.setAction(action);
+	}
+
 	private FileLineModel model;
-	private final CloseFileAction closeFileAction = Guice3Module.getInjector().getInstance(CloseFileAction.class);
 }

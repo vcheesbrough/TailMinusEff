@@ -12,12 +12,13 @@ import eventutil.*;
 
 @Singleton
 public class MultiFileModelSwingAdaptor implements EventProducer<MultiFileModelSwingAdaptorListener> {
-	private final MultiFileModel delegate = new MultiFileModel();
+	private final MultiFileModel delegate;
 
 	private final EventListenerList<MultiFileModelSwingAdaptorListener> listeners = new EventListenerList<MultiFileModelSwingAdaptorListener>();
 
 	@Inject
-	public MultiFileModelSwingAdaptor(Configuration config) {
+	public MultiFileModelSwingAdaptor(Configuration config, MultiFileModel model) {
+		delegate = model;
 		new OpenFilesConfigHandler(config);
 	}
 

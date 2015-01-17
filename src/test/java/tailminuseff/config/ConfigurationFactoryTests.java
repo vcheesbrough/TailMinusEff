@@ -28,6 +28,6 @@ public class ConfigurationFactoryTests {
 				result = new FileNotFoundException();
 			}
 		};
-		target.createConfiguration();
+		target.readConfiguration();
 	}
 }

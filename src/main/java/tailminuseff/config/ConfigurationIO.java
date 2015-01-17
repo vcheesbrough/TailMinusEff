@@ -3,8 +3,13 @@ package tailminuseff.config;
 import java.io.*;
 
 public class ConfigurationIO {
+	public static final File DEFAULT_FILE = new File(System.getProperty("user.home"), ".tailminuseff.config");
 
 	private final File file;
+
+	public ConfigurationIO() {
+		this(DEFAULT_FILE);
+	}
 
 	public ConfigurationIO(File file) {
 		super();
@@ -15,6 +20,7 @@ public class ConfigurationIO {
 		try (FileOutputStream fos = new FileOutputStream(this.file)) {
 			write(fos, c);
 		}
+		System.out.println("Wrote config");
 	}
 
 	public void write(OutputStream out, Configuration config) throws IOException {
@@ -27,6 +33,7 @@ public class ConfigurationIO {
 		try (FileInputStream fin = new FileInputStream(this.file)) {
 			readInto(fin, c);
 		}
+		System.out.println("read config");
 	}
 
 	public void readInto(InputStream in, Configuration destination) throws IOException, ClassNotFoundException {

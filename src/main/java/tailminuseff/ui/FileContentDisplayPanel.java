@@ -2,10 +2,12 @@ package tailminuseff.ui;
 
 import java.awt.*;
 
+import javax.inject.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import tailminuseff.FileLineModel;
+import tailminuseff.ui.actions.CloseFileAction;
 
 public class FileContentDisplayPanel extends JPanel {
 	private static final long serialVersionUID = -1364890050702175341L;
@@ -13,6 +15,7 @@ public class FileContentDisplayPanel extends JPanel {
 
 	private FileLineModel fileLineModel;
 
+	@Inject
 	public FileContentDisplayPanel() {
 		setBorder(new EmptyBorder(0, 0, 0, 0));
 		setLayout(new BorderLayout(0, 0));
@@ -37,11 +40,20 @@ public class FileContentDisplayPanel extends JPanel {
 		this.fileLineModel = fileLineModel;
 		new FileLineModelDocumentAdaptor(textPane.getDocument(), this.fileLineModel);
 		setName(this.fileLineModel.getFile().getName());
+		if (fileTabComponent != null) {
+			fileTabComponent.setModel(fileLineModel);
+		}
 	}
 
-	public Component createTabComponent() {
-		final FileTabComponent fileTabComponent = new FileTabComponent();
-		fileTabComponent.setModel(getFileLineModel());
+	private FileTabComponent fileTabComponent;
+
+	public FileTabComponent getFileTabComponent() {
 		return fileTabComponent;
+	}
+
+	@Inject
+	public void setFileTabComponent(FileTabComponent tabComponent) {
+		this.fileTabComponent = tabComponent;
+		fileTabComponent.setModel(getFileLineModel());
 	}
 }

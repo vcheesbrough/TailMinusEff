@@ -15,6 +15,8 @@ import tailminuseff.ui.actions.*;
 
 public class MainFrame extends JFrame {
 
+	private static final long serialVersionUID = -1197142382069507042L;
+
 	/**
 	 * Launch the application.
 	 */
@@ -24,7 +26,7 @@ public class MainFrame extends JFrame {
 				System.setProperty("apple.laf.useScreenMenuBar", "true");
 				// UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 				// final MainFrame frame = new MainFrame();
-				Guice3Module.getInjector().getInstance(MainFrame.class).setVisible(true);
+				Guice.createInjector(new Guice3Module()).getInstance(MainFrame.class).setVisible(true);
 				// frame.setVisible(true);
 			} catch (final Exception e) {
 				e.printStackTrace();
@@ -32,22 +34,24 @@ public class MainFrame extends JFrame {
 		});
 	}
 
-	private static final long serialVersionUID = -1197142382069507042L;
-	private final JPanel contentPane;
-	private final Action exitAction = new ExitAction();
-	private final JTabbedPane tabbedPane;
-
-	private final Action openAction = Guice3Module.getInjector().getInstance(OpenFileAction.class);
-
-	private final MultiFileModelSwingAdaptorListener modelListener = new MultiFileModelSwingAdaptorListener() {
+	private final ComponentListener boundsListener = new ComponentAdapter() {
 
 		@Override
-		public void fileOpened(FileOpenedEvent evt) {
-			final FileContentDisplayPanel panel = new FileContentDisplayPanel();
-			panel.setFileLineModel(evt.getFileLineModel());
-			tabbedPane.add(panel);
-			tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(panel), panel.createTabComponent());
+		public void componentMoved(ComponentEvent e) {
+			configuration.setMainWindowBounds(getBounds());
 		}
+
+		@Override
+		public void componentResized(ComponentEvent e) {
+			configuration.setMainWindowBounds(getBounds());
+		}
+
+	};
+	private final Configuration configuration;
+
+	private final JPanel contentPane;
+
+	private final MultiFileModelSwingAdaptorListener modelListener = new MultiFileModelSwingAdaptorListener() {
 
 		@Override
 		public void fileClosed(FileClosedEvent evt) {
@@ -61,27 +65,24 @@ public class MainFrame extends JFrame {
 				}
 			}
 		}
-	};
-
-	private final ComponentListener boundsListener = new ComponentAdapter() {
 
 		@Override
-		public void componentResized(ComponentEvent e) {
-			configuration.setMainWindowBounds(getBounds());
+		public void fileOpened(FileOpenedEvent evt) {
+			final FileContentDisplayPanel panel = panelProvider.get();
+			panel.setFileLineModel(evt.getFileLineModel());
+			tabbedPane.add(panel);
+			tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(panel), panel.getFileTabComponent());
 		}
-
-		@Override
-		public void componentMoved(ComponentEvent e) {
-			configuration.setMainWindowBounds(getBounds());
-		}
-
 	};
-	private final Configuration configuration;
+	private final JTabbedPane tabbedPane;
+	private Provider<FileContentDisplayPanel> panelProvider;
 
 	@SuppressWarnings("unused")
 	@Inject
-	public MainFrame(MultiFileModelSwingAdaptor multiFileModel, Configuration config) {
+	public MainFrame(MultiFileModelSwingAdaptor multiFileModel, Configuration config, OpenFileAction openFileAction, ExitAction exitAction, Provider<FileContentDisplayPanel> panelProvider) {
 		this.configuration = config;
+		this.panelProvider = panelProvider;
+		// openAction = openFileAction;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 602, 455);
 		contentPane = new JPanel();
@@ -99,9 +100,9 @@ public class MainFrame extends JFrame {
 		fileMenu.setMnemonic('f');
 		menuBar.add(fileMenu);
 
-		final JMenuItem mntmExit = fileMenu.add(exitAction);
+		final JMenuItem menuItemOpen = fileMenu.add(openFileAction);
+		final JMenuItem menuItemExit = fileMenu.add(exitAction);
 
-		final JMenuItem menuItem = fileMenu.add(openAction);
 		multiFileModel.addListener(modelListener);
 
 		addComponentListener(boundsListener);

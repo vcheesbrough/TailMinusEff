@@ -3,11 +3,12 @@ package tailminuseff.ui.actions;
 import java.awt.event.ActionEvent;
 import java.io.File;
 
-import javax.inject.Inject;
+import javax.inject.*;
 import javax.swing.*;
 
 import tailminuseff.ui.MultiFileModelSwingAdaptor;
 
+@Singleton
 public class CloseFileAction extends AbstractAction {
 
 	private static final long serialVersionUID = 3794223646705826118L;

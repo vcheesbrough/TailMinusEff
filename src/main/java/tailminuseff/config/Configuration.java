@@ -5,6 +5,9 @@ import java.beans.*;
 import java.io.*;
 import java.util.*;
 
+import javax.inject.Singleton;
+
+@Singleton
 public class Configuration implements Serializable {
 
 	private static final String OPEN_FILES = "openFiles";

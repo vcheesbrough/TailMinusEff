@@ -50,7 +50,7 @@ public class MultiFileModelSwingAdaptorTests {
 			}
 		};
 
-		target = new MultiFileModelSwingAdaptor(mockConfig);
+		target = new MultiFileModelSwingAdaptor(mockConfig, mockDelegate);
 		target.addListener(mockListener);
 	}
 
