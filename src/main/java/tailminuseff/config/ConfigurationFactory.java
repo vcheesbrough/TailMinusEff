@@ -3,28 +3,26 @@ package tailminuseff.config;
 import java.beans.PropertyChangeListener;
 import java.io.*;
 
+import javax.inject.Singleton;
+
+@Singleton
 public class ConfigurationFactory {
 	public static final File DEFAULT_FILE = new File(System.getProperty("user.home"), ".tailminuseff.config");
 
-	private final ConfigurationIO configurationIO = new ConfigurationIO(DEFAULT_FILE);
+	private final ConfigurationIO configurationIO;
 
-	public synchronized Configuration getConfiguration() {
-		if (configuration == null) {
-			configuration = createConfiguration();
-		}
-		return configuration;
+	public ConfigurationFactory(ConfigurationIO configIO) {
+		this.configurationIO = configIO;
 	}
 
-	private Configuration createConfiguration() {
+	public Configuration createConfiguration() {
 		final Configuration c = new Configuration();
 		try {
 			configurationIO.readIntoFromDefaultFile(c);
 		} catch (final FileNotFoundException fnfex) {
 			// fine ignore this
-		} catch (final IOException ioex) {
-			throw new RuntimeException(ioex);
-		} catch (final ClassNotFoundException e) {
-			throw new RuntimeException(e);
+		} catch (IOException | ClassNotFoundException ioex) {
+			ioex.printStackTrace();
 		}
 		final PropertyChangeEventDebouncer debouncer = new PropertyChangeEventDebouncer();
 		c.addPropertyChangeListener(debouncer.getInputListener());
@@ -42,15 +40,4 @@ public class ConfigurationFactory {
 			e.printStackTrace();
 		}
 	};
-	private static ConfigurationFactory instance;
-
-	public synchronized static ConfigurationFactory getInstance() {
-		if (instance == null) {
-			instance = new ConfigurationFactory();
-		}
-		return instance;
-	}
-
-	ConfigurationFactory() {
-	}
 }

@@ -3,10 +3,14 @@ package tailminuseff.ui;
 import java.awt.*;
 import java.awt.event.*;
 
+import javax.inject.Inject;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import tailminuseff.config.ConfigurationFactory;
+import com.google.inject.*;
+
+import tailminuseff.Guice3Module;
+import tailminuseff.config.*;
 import tailminuseff.ui.actions.*;
 
 public class MainFrame extends JFrame {
@@ -19,8 +23,9 @@ public class MainFrame extends JFrame {
 			try {
 				System.setProperty("apple.laf.useScreenMenuBar", "true");
 				// UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-				final MainFrame frame = new MainFrame();
-				frame.setVisible(true);
+				// final MainFrame frame = new MainFrame();
+				Guice3Module.getInjector().getInstance(MainFrame.class).setVisible(true);
+				// frame.setVisible(true);
 			} catch (final Exception e) {
 				e.printStackTrace();
 			}
@@ -32,7 +37,7 @@ public class MainFrame extends JFrame {
 	private final Action exitAction = new ExitAction();
 	private final JTabbedPane tabbedPane;
 
-	private final Action openAction = new OpenFileAction();
+	private final Action openAction = Guice3Module.getInjector().getInstance(OpenFileAction.class);
 
 	private final MultiFileModelSwingAdaptorListener modelListener = new MultiFileModelSwingAdaptorListener() {
 
@@ -62,18 +67,21 @@ public class MainFrame extends JFrame {
 
 		@Override
 		public void componentResized(ComponentEvent e) {
-			ConfigurationFactory.getInstance().getConfiguration().setMainWindowBounds(getBounds());
+			configuration.setMainWindowBounds(getBounds());
 		}
 
 		@Override
 		public void componentMoved(ComponentEvent e) {
-			ConfigurationFactory.getInstance().getConfiguration().setMainWindowBounds(getBounds());
+			configuration.setMainWindowBounds(getBounds());
 		}
 
 	};
+	private final Configuration configuration;
 
 	@SuppressWarnings("unused")
-	public MainFrame() {
+	@Inject
+	public MainFrame(MultiFileModelSwingAdaptor multiFileModel, Configuration config) {
+		this.configuration = config;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 602, 455);
 		contentPane = new JPanel();
@@ -94,14 +102,14 @@ public class MainFrame extends JFrame {
 		final JMenuItem mntmExit = fileMenu.add(exitAction);
 
 		final JMenuItem menuItem = fileMenu.add(openAction);
-		MultiFileModelSwingAdaptor.getInstance().addListener(modelListener);
+		multiFileModel.addListener(modelListener);
 
 		addComponentListener(boundsListener);
-		initializeBounds();
+		initializeBounds(config);
 	}
 
-	private void initializeBounds() {
-		final Rectangle configBounds = ConfigurationFactory.getInstance().getConfiguration().getMainWindowBounds();
+	private void initializeBounds(Configuration config) {
+		final Rectangle configBounds = config.getMainWindowBounds();
 		if (configBounds != null) {
 			setBounds(configBounds);
 		}

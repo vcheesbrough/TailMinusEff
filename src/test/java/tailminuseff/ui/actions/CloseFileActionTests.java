@@ -22,11 +22,11 @@ public class CloseFileActionTests {
 
 	@Test
 	public void callsMockModelCloseWithFile(@Mocked Component eventSource) {
-		new CloseFileAction().actionPerformed(new ActionEvent(eventSource, 0, "fileName"));
+		new CloseFileAction(mockModel).actionPerformed(new ActionEvent(eventSource, 0, "fileName"));
 
 		new Verifications() {
 			{
-				MultiFileModelSwingAdaptor.getInstance().closeFile(new File("fileName"));
+				mockModel.closeFile(new File("fileName"));
 				times = 1;
 			}
 		};

@@ -10,7 +10,7 @@ import mockit.*;
 
 import org.junit.Test;
 
-import tailminuseff.config.ConfigurationFactory;
+import tailminuseff.config.*;
 import tailminuseff.ui.MultiFileModelSwingAdaptor;
 
 public class OpenFileActionTests {
@@ -19,20 +19,20 @@ public class OpenFileActionTests {
 	@Mocked
 	private JFileChooser mockFileChoooser;
 	@Mocked
-	private ConfigurationFactory mockConfigurationFactory;
+	private Configuration mockConfiguration;
 
 	@Test
 	public void callsModelOpenIfDialogAccept(@Mocked Component eventSource) {
 		new Expectations() {
 			{
-				mockConfigurationFactory.getConfiguration().getOpenDialogDirectory();
+				mockConfiguration.getOpenDialogDirectory();
 				result = System.getProperty("user.home");
 			}
 		};
-		new OpenFileAction().actionPerformed(new ActionEvent(eventSource, 0, "./someFile"));
+		new OpenFileAction(mockModel, mockConfiguration).actionPerformed(new ActionEvent(eventSource, 0, "./someFile"));
 		new Verifications() {
 			{
-				MultiFileModelSwingAdaptor.getInstance().openFile((File) any);
+				mockModel.openFile((File) any);
 				times = 1;
 			}
 		};

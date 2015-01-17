@@ -17,12 +17,7 @@ public class ConfigurationFactoryTests {
 
 	@Before
 	public void Setup() {
-		target = new ConfigurationFactory();
-	}
-
-	@Test
-	public void getConfigurationReturnsSameEveryTime() {
-		assertEquals(target.getConfiguration(), target.getConfiguration());
+		target = new ConfigurationFactory(configurationIO);
 	}
 
 	@Test
@@ -33,11 +28,6 @@ public class ConfigurationFactoryTests {
 				result = new FileNotFoundException();
 			}
 		};
-		target.getConfiguration();
-	}
-
-	@Test
-	public void getInstanceReturnsSameInstanceEveryTime() {
-		assertEquals(ConfigurationFactory.getInstance(), ConfigurationFactory.getInstance());
+		target.createConfiguration();
 	}
 }

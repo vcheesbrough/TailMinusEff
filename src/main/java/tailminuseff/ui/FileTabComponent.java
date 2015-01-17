@@ -4,7 +4,7 @@ import java.awt.*;
 
 import javax.swing.*;
 
-import tailminuseff.FileLineModel;
+import tailminuseff.*;
 import tailminuseff.ui.actions.CloseFileAction;
 
 public class FileTabComponent extends JPanel {
@@ -58,5 +58,5 @@ public class FileTabComponent extends JPanel {
 	}
 
 	private FileLineModel model;
-	private final CloseFileAction closeFileAction = new CloseFileAction();
+	private final CloseFileAction closeFileAction = Guice3Module.getInjector().getInstance(CloseFileAction.class);
 }

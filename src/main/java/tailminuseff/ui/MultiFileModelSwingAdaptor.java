@@ -3,28 +3,22 @@ package tailminuseff.ui;
 import java.io.File;
 import java.util.concurrent.ExecutionException;
 
+import javax.inject.*;
 import javax.swing.SwingUtilities;
 
 import tailminuseff.*;
 import tailminuseff.config.*;
 import eventutil.*;
 
+@Singleton
 public class MultiFileModelSwingAdaptor implements EventProducer<MultiFileModelSwingAdaptorListener> {
 	private final MultiFileModel delegate = new MultiFileModel();
 
 	private final EventListenerList<MultiFileModelSwingAdaptorListener> listeners = new EventListenerList<MultiFileModelSwingAdaptorListener>();
 
-	private static MultiFileModelSwingAdaptor instance;
-
-	public static final MultiFileModelSwingAdaptor getInstance() {
-		if (instance == null) {
-			instance = new MultiFileModelSwingAdaptor();
-		}
-		return instance;
-	}
-
-	MultiFileModelSwingAdaptor() {
-		new OpenFilesConfigHandler(ConfigurationFactory.getInstance().getConfiguration());
+	@Inject
+	public MultiFileModelSwingAdaptor(Configuration config) {
+		new OpenFilesConfigHandler(config);
 	}
 
 	@Override
