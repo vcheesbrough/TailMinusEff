@@ -1,16 +1,10 @@
 package tailminuseff.ui;
 
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
-import java.io.File;
-
 import mockit.*;
 
 import org.junit.*;
-
-import com.google.inject.*;
 
 import tailminuseff.*;
 

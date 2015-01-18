@@ -7,7 +7,7 @@ import javax.inject.*;
 import javax.swing.SwingUtilities;
 
 import tailminuseff.*;
-import tailminuseff.config.*;
+import tailminuseff.config.Configuration;
 import eventutil.*;
 
 @Singleton

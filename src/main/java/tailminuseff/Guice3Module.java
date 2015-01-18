@@ -1,12 +1,11 @@
 package tailminuseff;
 
-import java.io.IOException;
-
 import tailminuseff.config.*;
 import tailminuseff.ui.MainFrame;
 import tailminuseff.ui.actions.OpenFileAction;
 
-import com.google.inject.*;
+import com.google.inject.AbstractModule;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
 
 public class Guice3Module extends AbstractModule {
 
@@ -16,5 +15,6 @@ public class Guice3Module extends AbstractModule {
 		bind(MainFrame.class);
 		bind(OpenFileAction.class);
 		bind(Configuration.class).toProvider(ConfigurationFactory.class);
+		install(new FactoryModuleBuilder().implement(FileMonitor.class, SimpleFileMonitor.class).build(FileMonitorFactory.class));
 	}
 }

@@ -5,7 +5,7 @@ import java.awt.*;
 import javax.inject.Inject;
 import javax.swing.*;
 
-import tailminuseff.*;
+import tailminuseff.FileLineModel;
 import tailminuseff.ui.actions.CloseFileAction;
 
 public class FileTabComponent extends JPanel {

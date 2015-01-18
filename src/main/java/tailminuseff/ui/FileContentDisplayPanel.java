@@ -2,12 +2,11 @@ package tailminuseff.ui;
 
 import java.awt.*;
 
-import javax.inject.*;
+import javax.inject.Inject;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import tailminuseff.FileLineModel;
-import tailminuseff.ui.actions.CloseFileAction;
 
 public class FileContentDisplayPanel extends JPanel {
 	private static final long serialVersionUID = -1364890050702175341L;

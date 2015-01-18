@@ -1,7 +1,5 @@
 package tailminuseff.config;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.*;
 
 import mockit.*;

@@ -10,7 +10,7 @@ import mockit.*;
 
 import org.junit.Test;
 
-import tailminuseff.config.*;
+import tailminuseff.config.Configuration;
 import tailminuseff.ui.MultiFileModelSwingAdaptor;
 
 public class OpenFileActionTests {

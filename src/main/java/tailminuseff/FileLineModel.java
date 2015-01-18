@@ -29,9 +29,9 @@ public class FileLineModel implements EventProducer<FileLineModelListener> {
 		}
 	};
 
-	public FileLineModel(FileMonitor fileMonitor) {
+	public FileLineModel(FileMonitor monitor) {
 		super();
-		this.fileMonitor = fileMonitor;
+		this.fileMonitor = monitor;
 		this.fileMonitor.addListener(monitorListener);
 	}
 

@@ -1,6 +1,5 @@
 package tailminuseff.config;
 
-import java.beans.PropertyChangeListener;
 import java.io.*;
 
 import javax.inject.*;

@@ -6,7 +6,7 @@ import java.awt.event.ActionEvent;
 import javax.inject.*;
 import javax.swing.*;
 
-import tailminuseff.config.*;
+import tailminuseff.config.Configuration;
 import tailminuseff.ui.MultiFileModelSwingAdaptor;
 
 @Singleton

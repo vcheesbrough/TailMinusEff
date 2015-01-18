@@ -30,11 +30,11 @@ public class MultiFileModelTests {
 
 		new Expectations() {
 			{
-				FileMonitorFactory.createForFile((File) any);
+				mockMonitorFactory.createForFile((File) any);
 				returns(mockMonitor);
 			}
 		};
-		target = new MultiFileModel();
+		target = new MultiFileModel(mockMonitorFactory);
 	}
 
 	@After
@@ -82,7 +82,7 @@ public class MultiFileModelTests {
 		target.openFile(file);
 		new Verifications() {
 			{
-				FileMonitorFactory.createForFile(file);
+				mockMonitorFactory.createForFile(file);
 			}
 		};
 	}

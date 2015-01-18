@@ -17,6 +17,8 @@ public class FileLineModelTests {
 	private FileLineModel target;
 	@Mocked
 	private FileLineModelListener mockedListener;
+	@Mocked
+	private FileMonitorFactory mockMonitorFactory;
 
 	@Before
 	public void Setup() {

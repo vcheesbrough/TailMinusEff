@@ -7,11 +7,11 @@ import javax.inject.Inject;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import com.google.inject.*;
-
 import tailminuseff.Guice3Module;
-import tailminuseff.config.*;
+import tailminuseff.config.Configuration;
 import tailminuseff.ui.actions.*;
+
+import com.google.inject.*;
 
 public class MainFrame extends JFrame {
 
@@ -75,7 +75,7 @@ public class MainFrame extends JFrame {
 		}
 	};
 	private final JTabbedPane tabbedPane;
-	private Provider<FileContentDisplayPanel> panelProvider;
+	private final Provider<FileContentDisplayPanel> panelProvider;
 
 	@SuppressWarnings("unused")
 	@Inject

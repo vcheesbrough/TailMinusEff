@@ -5,8 +5,8 @@ import java.io.IOException;
 
 public class WriteConfigOnChange {
 
-	private ConfigurationIO configIO;
-	private Configuration config;
+	private final ConfigurationIO configIO;
+	private final Configuration config;
 
 	public WriteConfigOnChange(Configuration config, ConfigurationIO configIO) {
 		this.config = config;

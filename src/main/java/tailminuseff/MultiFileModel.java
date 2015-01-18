@@ -4,16 +4,24 @@ import java.io.File;
 import java.util.*;
 import java.util.concurrent.*;
 
+import javax.inject.Inject;
+
 public class MultiFileModel {
 	private final Map<FileMonitor, Future<Void>> futuresByMonitor = new HashMap<FileMonitor, Future<Void>>();
 	private final Map<File, FileLineModel> modelsByFile = new HashMap<File, FileLineModel>();
 	private final List<File> modelsInOrder = new ArrayList<File>();
+	private final FileMonitorFactory fileMonitorFactory;
+
+	@Inject
+	public MultiFileModel(FileMonitorFactory factory) {
+		this.fileMonitorFactory = factory;
+	}
 
 	public synchronized FileLineModel openFile(File newFile) {
-		final FileMonitor m = FileMonitorFactory.createForFile(newFile);
-		final Future<Void> future = ApplicationExecutors.getFilesExecutorService().submit(m);
-		futuresByMonitor.put(m, future);
-		final FileLineModel model = new FileLineModel(m);
+		final FileMonitor monitor = fileMonitorFactory.createForFile(newFile);
+		final FileLineModel model = new FileLineModel(monitor);
+		final Future<Void> future = ApplicationExecutors.getFilesExecutorService().submit(model.getFileMonitor());
+		futuresByMonitor.put(model.getFileMonitor(), future);
 		modelsByFile.put(newFile, model);
 		modelsInOrder.add(newFile);
 		return model;

@@ -4,11 +4,16 @@ import java.io.*;
 import java.nio.channels.*;
 import java.util.regex.*;
 
+import javax.inject.Inject;
+
+import com.google.inject.assistedinject.Assisted;
+
 public class SimpleFileMonitor extends FileMonitor {
 
 	private static final Pattern linePattern = Pattern.compile(".*?\r?\n", Pattern.MULTILINE | Pattern.DOTALL);
 
-	public SimpleFileMonitor(File file) {
+	@Inject
+	public SimpleFileMonitor(@Assisted File file) {
 		super(file);
 	}
 
