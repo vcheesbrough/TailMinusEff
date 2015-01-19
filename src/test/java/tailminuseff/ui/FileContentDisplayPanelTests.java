@@ -2,16 +2,30 @@ package tailminuseff.ui;
 
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
+
+import javax.swing.*;
+
 import mockit.*;
 
 import org.junit.*;
 
 import tailminuseff.*;
 
+@Ignore
 public class FileContentDisplayPanelTests {
 
 	@Mocked
 	private FileLineModel mockModel;
+
+	@Before
+	public void Setup() {
+		// new MockUp<SwingUtilities>() {
+		// @Mock
+		// public void invokeLater(Runnable doRun) {
+		// doRun.run();
+		// }
+		// };
+	}
 
 	@Test
 	public void getFileLineModelReturnsSetInstance() {
@@ -21,9 +35,10 @@ public class FileContentDisplayPanelTests {
 	}
 
 	@Test
-	@Ignore
-	public void setFileLineModelAddsListener() {
-		new FileContentDisplayPanel().setFileLineModel(mockModel);
+	public void setFileLineModelAddsListener(@Mocked FileTabComponent tabComponent) {
+		final FileContentDisplayPanel target = new FileContentDisplayPanel();
+		target.setFileTabComponent(tabComponent);
+		target.setFileLineModel(mockModel);
 
 		new Verifications() {
 			{
