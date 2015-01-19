@@ -119,4 +119,5 @@ public class MultiFileModelSwingAdaptorTests {
 
 		assertEquals(file, capturedEvents.get(0).getFileLineModel().getFile());
 	}
+
 }

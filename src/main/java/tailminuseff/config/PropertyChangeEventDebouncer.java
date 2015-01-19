@@ -8,7 +8,7 @@ import eventutil.EventListenerList;
 
 public class PropertyChangeEventDebouncer {
 
-	private final long maximumEventFrequencyMs = 150;
+	private final long maximumEventFrequencyMs = 500;
 
 	private final Object lock = new Object();
 

@@ -83,4 +83,9 @@ public class ConfigurationIOTests {
 			}
 		};
 	}
+
+	@Test
+	public void defaultConstructorUsesCorrectFile(@Mocked File file) {
+		assertEquals(ConfigurationIO.DEFAULT_FILE, new ConfigurationIO().getFile());
+	}
 }

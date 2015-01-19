@@ -11,8 +11,11 @@ import tailminuseff.ui.actions.CloseFileAction;
 public class FileTabComponent extends JPanel {
 	private final JLabel fileNameLbl;
 	private final JButton closeButton;
+	private final CloseFileAction closeFileAction;
 
-	public FileTabComponent() {
+	@Inject
+	public FileTabComponent(CloseFileAction closeFileAction) {
+		this.closeFileAction = closeFileAction;
 		setOpaque(false);
 		final GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 66, 32, 0 };
@@ -37,6 +40,7 @@ public class FileTabComponent extends JPanel {
 		closeButton.setHideActionText(true);
 		closeButton.setDefaultCapable(false);
 		closeButton.setFocusable(false);
+		closeButton.setAction(closeFileAction);
 		// closeButton.putClientProperty("JButton.buttonType", "recessed");
 		final GridBagConstraints gbc_closeButton = new GridBagConstraints();
 		gbc_closeButton.weighty = 1.0;
@@ -55,11 +59,6 @@ public class FileTabComponent extends JPanel {
 		this.model = model;
 		this.fileNameLbl.setText(model.getFile().getName());
 		this.closeButton.setActionCommand(model.getFile().getAbsolutePath());
-	}
-
-	@Inject
-	public void setCloseFileAction(CloseFileAction action) {
-		closeButton.setAction(action);
 	}
 
 	private FileLineModel model;

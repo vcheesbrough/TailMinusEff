@@ -53,6 +53,8 @@ public class FileContentDisplayPanel extends JPanel {
 	@Inject
 	public void setFileTabComponent(FileTabComponent tabComponent) {
 		this.fileTabComponent = tabComponent;
-		fileTabComponent.setModel(getFileLineModel());
+		if (getFileLineModel() != null) {
+			fileTabComponent.setModel(getFileLineModel());
+		}
 	}
 }

@@ -1,8 +1,10 @@
 package tailminuseff;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.concurrent.*;
 
 import mockit.*;
@@ -102,5 +104,12 @@ public class MultiFileModelTests {
 				times = 1;
 			}
 		};
+	}
+
+	@Test
+	public void getOpenFilesListsFilesInOrder(@Mocked File file1, @Mocked File file2) {
+		target.openFile(file1);
+		target.openFile(file2);
+		assertEquals(Arrays.asList(new File[] { file1, file2 }), target.getOpenFiles());
 	}
 }

@@ -7,6 +7,10 @@ public class ConfigurationIO {
 
 	private final File file;
 
+	public File getFile() {
+		return file;
+	}
+
 	public ConfigurationIO() {
 		this(DEFAULT_FILE);
 	}
