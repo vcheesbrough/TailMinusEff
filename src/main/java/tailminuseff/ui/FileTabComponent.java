@@ -9,13 +9,12 @@ import tailminuseff.FileLineModel;
 import tailminuseff.ui.actions.CloseFileAction;
 
 public class FileTabComponent extends JPanel {
+	private static final long serialVersionUID = -2943694708852027248L;
 	private final JLabel fileNameLbl;
 	private final JButton closeButton;
-	private final CloseFileAction closeFileAction;
 
 	@Inject
 	public FileTabComponent(CloseFileAction closeFileAction) {
-		this.closeFileAction = closeFileAction;
 		setOpaque(false);
 		final GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 66, 32, 0 };
