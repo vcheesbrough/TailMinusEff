@@ -16,7 +16,7 @@ public class MultiFileModelSwingAdaptor implements EventProducer<MultiFileModelS
 
 	private final EventListenerList<MultiFileModelSwingAdaptorListener> listeners = new EventListenerList<MultiFileModelSwingAdaptorListener>();
 
-	private ExecutorService executorService;
+	private final ExecutorService executorService;
 
 	@Inject
 	public MultiFileModelSwingAdaptor(Configuration config, MultiFileModel model, @GeneralExecutor ExecutorService executorService) {

@@ -12,7 +12,7 @@ public class MultiFileModel {
 
 	private final List<ActiveMonitor> models = new ArrayList<MultiFileModel.ActiveMonitor>();
 
-	private ExecutorService executorService;
+	private final ExecutorService executorService;
 
 	@Inject
 	public MultiFileModel(FileMonitorFactory factory, @FileExectutor ExecutorService executorService) {
@@ -29,7 +29,7 @@ public class MultiFileModel {
 	}
 
 	public synchronized void close(FileLineModel fileLineModel) throws InterruptedException, ExecutionException {
-		ActiveMonitor m = models.stream().filter(am -> am.getModel() == fileLineModel).findFirst().get();
+		final ActiveMonitor m = models.stream().filter(am -> am.getModel() == fileLineModel).findFirst().get();
 		m.getFuture().cancel(true);
 		try {
 			m.getFuture().get();
@@ -40,7 +40,7 @@ public class MultiFileModel {
 	}
 
 	public synchronized FileLineModel close(File file) throws InterruptedException, ExecutionException {
-		ActiveMonitor m = models.stream().filter(am -> am.getModel().getFile().equals(file)).findFirst().get();
+		final ActiveMonitor m = models.stream().filter(am -> am.getModel().getFile().equals(file)).findFirst().get();
 		m.getFuture().cancel(true);
 		try {
 			m.getFuture().get();

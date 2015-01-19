@@ -5,7 +5,6 @@ import java.util.concurrent.*;
 
 import javax.inject.Inject;
 
-import tailminuseff.ApplicationExecutors;
 import eventutil.EventListenerList;
 
 public class PropertyChangeEventDebouncer {
@@ -16,7 +15,7 @@ public class PropertyChangeEventDebouncer {
 
 	private final EventListenerList<PropertyChangeListener> outputEventListeners = new EventListenerList<PropertyChangeListener>(lock);
 
-	private ScheduledExecutorService scheduledExecutorService;
+	private final ScheduledExecutorService scheduledExecutorService;
 
 	@Inject
 	public PropertyChangeEventDebouncer(ScheduledExecutorService scheduledExecutorService) {

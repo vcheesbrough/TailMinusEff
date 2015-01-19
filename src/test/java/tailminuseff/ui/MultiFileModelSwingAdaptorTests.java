@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingUtilities;
 
@@ -13,7 +13,7 @@ import mockit.*;
 
 import org.junit.*;
 
-import tailminuseff.*;
+import tailminuseff.MultiFileModel;
 import tailminuseff.config.*;
 
 import com.google.common.util.concurrent.MoreExecutors;

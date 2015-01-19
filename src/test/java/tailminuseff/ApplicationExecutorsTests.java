@@ -1,7 +1,6 @@
 package tailminuseff;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
 
 import org.junit.*;
 

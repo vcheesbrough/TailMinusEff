@@ -32,7 +32,7 @@ public class ApplicationExecutors {
 		return new ExceptionNotifyingScheduledExecutorServiceDecorator(Executors.newScheduledThreadPool(1, threadFactoryBuilder.build()), unhandledExceptionConsumer);
 	}
 
-	private UnhandledExceptionConsumer unhandledExceptionConsumer = (thread, throwable) -> {
+	private final UnhandledExceptionConsumer unhandledExceptionConsumer = (thread, throwable) -> {
 		System.out.println(thread.getName());
 		throwable.printStackTrace();
 	};
