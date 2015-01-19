@@ -43,14 +43,7 @@ public class MultiFileModelSwingAdaptorTests {
 			}
 		};
 
-		new MockUp<ApplicationExecutors>() {
-			@Mock
-			public ExecutorService getGeneralExecutorService() {
-				return MoreExecutors.sameThreadExecutor();
-			}
-		};
-
-		target = new MultiFileModelSwingAdaptor(mockConfig, mockDelegate);
+		target = new MultiFileModelSwingAdaptor(mockConfig, mockDelegate, MoreExecutors.sameThreadExecutor());
 		target.addListener(mockListener);
 	}
 

@@ -7,10 +7,12 @@ import javax.inject.*;
 @Singleton
 public class ConfigurationFactory implements Provider<Configuration> {
 	private final ConfigurationIO configurationIO;
+	private Provider<PropertyChangeEventDebouncer> debouncerProvider;
 
 	@Inject
-	public ConfigurationFactory(ConfigurationIO configIO) {
+	public ConfigurationFactory(ConfigurationIO configIO, Provider<PropertyChangeEventDebouncer> debouncerProvider) {
 		this.configurationIO = configIO;
+		this.debouncerProvider = debouncerProvider;
 	}
 
 	public Configuration readConfiguration() {
@@ -22,9 +24,9 @@ public class ConfigurationFactory implements Provider<Configuration> {
 		} catch (IOException | ClassNotFoundException ex) {
 			ex.printStackTrace();
 		}
-		final PropertyChangeEventDebouncer debouncer = new PropertyChangeEventDebouncer();
+		PropertyChangeEventDebouncer debouncer = debouncerProvider.get();
 		c.addPropertyChangeListener(debouncer.getInputListener());
-		new WriteConfigOnChange(c, configurationIO);
+		debouncer.addPropertyChangeListener(new WriteConfigOnChange(c, configurationIO));
 		return c;
 	}
 

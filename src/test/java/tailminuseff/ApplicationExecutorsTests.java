@@ -3,32 +3,28 @@ package tailminuseff;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
-import org.junit.Test;
+import org.junit.*;
 
 public class ApplicationExecutorsTests {
+	private ApplicationExecutors target;
 
-	@Test
-	public void getFilesExecutorServiceReturnsInstance() {
-		assertNotNull(ApplicationExecutors.getFilesExecutorService());
+	@Before
+	public void Setup() {
+		target = new ApplicationExecutors();
 	}
 
 	@Test
-	public void getFilesExecutorServiceReturnsSameInstanceEachTime() {
-		assertSame(ApplicationExecutors.getFilesExecutorService(), ApplicationExecutors.getFilesExecutorService());
+	public void getFilesExecutorServiceReturnsInstance() {
+		assertNotNull(target.createFilesExecutorService());
 	}
 
 	@Test
 	public void getGeneralExecutorServiceReturnsInstance() {
-		assertNotNull(ApplicationExecutors.getGeneralExecutorService());
+		assertNotNull(target.createGeneralExecutorService());
 	}
 
 	@Test
 	public void getScheduledExecutorServiceReturnsInstance() {
-		assertNotNull(ApplicationExecutors.getScheduledExecutorService());
-	}
-
-	@Test
-	public void getScheduledExecutorServiceReturnsSameInstanceEachTime() {
-		assertSame(ApplicationExecutors.getScheduledExecutorService(), ApplicationExecutors.getScheduledExecutorService());
+		assertNotNull(target.createScheduledExecutorService());
 	}
 }

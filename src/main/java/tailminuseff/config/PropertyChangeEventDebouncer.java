@@ -3,6 +3,8 @@ package tailminuseff.config;
 import java.beans.*;
 import java.util.concurrent.*;
 
+import javax.inject.Inject;
+
 import tailminuseff.ApplicationExecutors;
 import eventutil.EventListenerList;
 
@@ -14,6 +16,13 @@ public class PropertyChangeEventDebouncer {
 
 	private final EventListenerList<PropertyChangeListener> outputEventListeners = new EventListenerList<PropertyChangeListener>(lock);
 
+	private ScheduledExecutorService scheduledExecutorService;
+
+	@Inject
+	public PropertyChangeEventDebouncer(ScheduledExecutorService scheduledExecutorService) {
+		this.scheduledExecutorService = scheduledExecutorService;
+	}
+
 	public PropertyChangeListener getInputListener() {
 		return inputListener;
 	}
@@ -24,7 +33,7 @@ public class PropertyChangeEventDebouncer {
 		if (future != null) {
 			future.cancel(false);
 		}
-		future = ApplicationExecutors.getScheduledExecutorService().schedule(() -> {
+		future = scheduledExecutorService.schedule(() -> {
 			synchronized (lock) {
 				final PropertyChangeEvent newEvt = new PropertyChangeEvent(PropertyChangeEventDebouncer.this, null, null, null);
 				outputEventListeners.forEachLisener(listener -> listener.propertyChange(newEvt));

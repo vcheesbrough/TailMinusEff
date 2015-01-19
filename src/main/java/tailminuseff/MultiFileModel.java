@@ -3,49 +3,74 @@ package tailminuseff;
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 public class MultiFileModel {
-	private final Map<FileMonitor, Future<Void>> futuresByMonitor = new HashMap<FileMonitor, Future<Void>>();
-	private final Map<File, FileLineModel> modelsByFile = new HashMap<File, FileLineModel>();
-	private final List<File> modelsInOrder = new ArrayList<File>();
 	private final FileMonitorFactory fileMonitorFactory;
 
+	private final List<ActiveMonitor> models = new ArrayList<MultiFileModel.ActiveMonitor>();
+
+	private ExecutorService executorService;
+
 	@Inject
-	public MultiFileModel(FileMonitorFactory factory) {
+	public MultiFileModel(FileMonitorFactory factory, @FileExectutor ExecutorService executorService) {
 		this.fileMonitorFactory = factory;
+		this.executorService = executorService;
 	}
 
 	public synchronized FileLineModel openFile(File newFile) {
 		final FileMonitor monitor = fileMonitorFactory.createForFile(newFile);
 		final FileLineModel model = new FileLineModel(monitor);
-		final Future<Void> future = ApplicationExecutors.getFilesExecutorService().submit(model.getFileMonitor());
-		futuresByMonitor.put(model.getFileMonitor(), future);
-		modelsByFile.put(newFile, model);
-		modelsInOrder.add(newFile);
+		final Future<Void> future = executorService.submit(model.getFileMonitor());
+		models.add(new ActiveMonitor(model, future));
 		return model;
 	}
 
 	public synchronized void close(FileLineModel fileLineModel) throws InterruptedException, ExecutionException {
-		final Future<Void> future = futuresByMonitor.remove(fileLineModel.getFileMonitor());
-		modelsByFile.remove(fileLineModel.getFile());
-		modelsInOrder.remove(fileLineModel.getFile());
-		future.cancel(true);
+		ActiveMonitor m = models.stream().filter(am -> am.getModel() == fileLineModel).findFirst().get();
+		m.getFuture().cancel(true);
 		try {
-			future.get();
+			m.getFuture().get();
 		} catch (final CancellationException cex) { // this is expected
 
 		}
+		models.remove(m);
 	}
 
 	public synchronized FileLineModel close(File file) throws InterruptedException, ExecutionException {
-		final FileLineModel fileLineModel = modelsByFile.get(file);
-		close(fileLineModel);
-		return fileLineModel;
+		ActiveMonitor m = models.stream().filter(am -> am.getModel().getFile().equals(file)).findFirst().get();
+		m.getFuture().cancel(true);
+		try {
+			m.getFuture().get();
+		} catch (final CancellationException cex) { // this is expected
+
+		}
+		models.remove(m);
+		return m.getModel();
 	}
 
 	public synchronized List<File> getOpenFiles() {
-		return this.modelsInOrder;
+		return models.stream().map(am -> am.getModel().getFile()).collect(Collectors.toList());
+	}
+
+	private class ActiveMonitor {
+		public FileLineModel getModel() {
+			return model;
+		}
+
+		public Future<Void> getFuture() {
+			return future;
+		}
+
+		private final FileLineModel model;
+		private final Future<Void> future;
+
+		public ActiveMonitor(FileLineModel model, Future<Void> future) {
+			super();
+			this.model = model;
+			this.future = future;
+		}
 	}
 }

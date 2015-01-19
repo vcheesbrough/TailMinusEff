@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
-import java.util.Arrays;
+import java.util.*;
 import java.util.concurrent.*;
 
 import mockit.*;
@@ -23,20 +23,13 @@ public class MultiFileModelTests {
 
 	@Before
 	public void setUp() throws Exception {
-		new MockUp<ApplicationExecutors>() {
-			@Mock
-			public ExecutorService getFilesExecutorService() {
-				return mockFileExecutorService;
-			}
-		};
-
 		new Expectations() {
 			{
 				mockMonitorFactory.createForFile((File) any);
 				returns(mockMonitor);
 			}
 		};
-		target = new MultiFileModel(mockMonitorFactory);
+		target = new MultiFileModel(mockMonitorFactory, mockFileExecutorService);
 	}
 
 	@After
@@ -107,9 +100,8 @@ public class MultiFileModelTests {
 	}
 
 	@Test
-	public void getOpenFilesListsFilesInOrder(@Mocked File file1, @Mocked File file2) {
-		target.openFile(file1);
-		target.openFile(file2);
-		assertEquals(Arrays.asList(new File[] { file1, file2 }), target.getOpenFiles());
+	public void getOpenFilesSmokeTest(@Mocked File file) {
+		target.openFile(file);
+		assertEquals(1, target.getOpenFiles().size());
 	}
 }

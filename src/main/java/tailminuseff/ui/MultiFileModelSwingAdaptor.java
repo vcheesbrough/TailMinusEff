@@ -1,7 +1,7 @@
 package tailminuseff.ui;
 
 import java.io.File;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.*;
 
 import javax.inject.*;
 import javax.swing.SwingUtilities;
@@ -16,9 +16,12 @@ public class MultiFileModelSwingAdaptor implements EventProducer<MultiFileModelS
 
 	private final EventListenerList<MultiFileModelSwingAdaptorListener> listeners = new EventListenerList<MultiFileModelSwingAdaptorListener>();
 
+	private ExecutorService executorService;
+
 	@Inject
-	public MultiFileModelSwingAdaptor(Configuration config, MultiFileModel model) {
+	public MultiFileModelSwingAdaptor(Configuration config, MultiFileModel model, @GeneralExecutor ExecutorService executorService) {
 		delegate = model;
+		this.executorService = executorService;
 		new OpenFilesConfigHandler(config);
 	}
 
@@ -33,7 +36,7 @@ public class MultiFileModelSwingAdaptor implements EventProducer<MultiFileModelS
 	}
 
 	public void openFile(File newFile) {
-		ApplicationExecutors.getGeneralExecutorService().submit(() -> {
+		executorService.submit(() -> {
 			final FileLineModel newModel = delegate.openFile(newFile);
 			final FileOpenedEvent evt = new FileOpenedEvent(this, newModel);
 			SwingUtilities.invokeLater(() -> listeners.forEachLisener(listener -> listener.fileOpened(evt)));
@@ -41,7 +44,7 @@ public class MultiFileModelSwingAdaptor implements EventProducer<MultiFileModelS
 	}
 
 	public void closeFile(File file) {
-		ApplicationExecutors.getGeneralExecutorService().submit(() -> {
+		executorService.submit(() -> {
 			try {
 				final FileLineModel model = delegate.close(file);
 				final FileClosedEvent evt = new FileClosedEvent(this, model);
