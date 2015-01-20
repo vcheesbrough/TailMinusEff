@@ -8,6 +8,8 @@ import mockit.*;
 
 import org.junit.*;
 
+import com.google.common.eventbus.EventBus;
+
 public class ConfigurationFactoryTests {
 
 	@Mocked
@@ -20,7 +22,7 @@ public class ConfigurationFactoryTests {
 
 	@Before
 	public void Setup() {
-		target = new ConfigurationFactory(configurationIO, mockDebouncerProvider);
+		target = new ConfigurationFactory(configurationIO, mockDebouncerProvider, new EventBus(this.getClass().getName()));
 	}
 
 	@Test

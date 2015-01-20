@@ -8,6 +8,9 @@ import javax.swing.SwingUtilities;
 
 import tailminuseff.*;
 import tailminuseff.config.Configuration;
+
+import com.google.common.eventbus.EventBus;
+
 import eventutil.*;
 
 @Singleton
@@ -18,10 +21,13 @@ public class MultiFileModelSwingAdaptor implements EventProducer<MultiFileModelS
 
 	private final ExecutorService executorService;
 
+	private final EventBus eventBus;
+
 	@Inject
-	public MultiFileModelSwingAdaptor(Configuration config, MultiFileModel model, @GeneralExecutor ExecutorService executorService) {
+	public MultiFileModelSwingAdaptor(Configuration config, MultiFileModel model, @GeneralExecutor ExecutorService executorService, EventBus eventBus) {
 		delegate = model;
 		this.executorService = executorService;
+		this.eventBus = eventBus;
 		new OpenFilesConfigHandler(config);
 	}
 
@@ -49,10 +55,8 @@ public class MultiFileModelSwingAdaptor implements EventProducer<MultiFileModelS
 				final FileLineModel model = delegate.close(file);
 				final FileClosedEvent evt = new FileClosedEvent(this, model);
 				SwingUtilities.invokeLater(() -> listeners.forEachLisener(listener -> listener.fileClosed(evt)));
-			} catch (final InterruptedException ex) {
-				throw new RuntimeException(ex);
-			} catch (final ExecutionException ex) {
-				throw new RuntimeException(ex);
+			} catch (InterruptedException | ExecutionException ex) {
+				eventBus.post(new UnhandledException(ex, "Unable to close file \"" + file + "\""));
 			}
 		});
 	}

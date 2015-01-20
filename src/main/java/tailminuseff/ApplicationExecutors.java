@@ -2,14 +2,22 @@ package tailminuseff;
 
 import java.util.concurrent.*;
 
-import javax.inject.Singleton;
+import javax.inject.*;
 
 import util.concurrent.*;
 
+import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 @Singleton
 public class ApplicationExecutors {
+
+	private final EventBus eventBus;
+
+	@Inject
+	public ApplicationExecutors(EventBus eventBus) {
+		this.eventBus = eventBus;
+	}
 
 	public ExecutorService createFilesExecutorService() {
 		final ThreadFactoryBuilder threadFactoryBuilder = new ThreadFactoryBuilder();
@@ -33,7 +41,6 @@ public class ApplicationExecutors {
 	}
 
 	private final UnhandledExceptionConsumer unhandledExceptionConsumer = (thread, throwable) -> {
-		System.out.println(thread.getName());
-		throwable.printStackTrace();
+		eventBus.post(new UnhandledException(throwable, thread, "Unknown error"));
 	};
 }

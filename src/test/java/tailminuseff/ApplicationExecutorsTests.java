@@ -1,15 +1,20 @@
 package tailminuseff;
 
 import static org.junit.Assert.assertNotNull;
+import mockit.Mocked;
 
 import org.junit.*;
 
+import com.google.common.eventbus.EventBus;
+
 public class ApplicationExecutorsTests {
 	private ApplicationExecutors target;
+	@Mocked
+	private EventBus mockEventBus;
 
 	@Before
 	public void Setup() {
-		target = new ApplicationExecutors();
+		target = new ApplicationExecutors(mockEventBus);
 	}
 
 	@Test

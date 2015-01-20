@@ -16,6 +16,7 @@ import org.junit.*;
 import tailminuseff.MultiFileModel;
 import tailminuseff.config.*;
 
+import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.MoreExecutors;
 
 public class MultiFileModelSwingAdaptorTests {
@@ -43,7 +44,7 @@ public class MultiFileModelSwingAdaptorTests {
 			}
 		};
 
-		target = new MultiFileModelSwingAdaptor(mockConfig, mockDelegate, MoreExecutors.sameThreadExecutor());
+		target = new MultiFileModelSwingAdaptor(mockConfig, mockDelegate, MoreExecutors.sameThreadExecutor(), new EventBus(this.getClass().getName()));
 		target.addListener(mockListener);
 	}
 

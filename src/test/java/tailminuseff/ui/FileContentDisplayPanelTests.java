@@ -2,9 +2,6 @@ package tailminuseff.ui;
 
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
-
-import javax.swing.*;
-
 import mockit.*;
 
 import org.junit.*;

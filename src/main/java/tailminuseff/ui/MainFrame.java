@@ -7,7 +7,7 @@ import javax.inject.Inject;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import tailminuseff.Guice3Module;
+import tailminuseff.*;
 import tailminuseff.config.Configuration;
 import tailminuseff.ui.actions.*;
 
@@ -25,8 +25,10 @@ public class MainFrame extends JFrame {
 			try {
 				System.setProperty("apple.laf.useScreenMenuBar", "true");
 				// UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-				// final MainFrame frame = new MainFrame();
-				Guice.createInjector(new Guice3Module()).getInstance(MainFrame.class).setVisible(true);
+				final Injector injector = Guice.createInjector(new Guice3Module());
+				injector.getInstance(StackTraceDumpingEventBusConsumer.class);
+				injector.getInstance(ErrorDisplayController.class);
+				injector.getInstance(MainFrame.class).setVisible(true);
 				// frame.setVisible(true);
 			} catch (final Exception e) {
 				e.printStackTrace();
@@ -82,7 +84,6 @@ public class MainFrame extends JFrame {
 	public MainFrame(MultiFileModelSwingAdaptor multiFileModel, Configuration config, OpenFileAction openFileAction, ExitAction exitAction, Provider<FileContentDisplayPanel> panelProvider) {
 		this.configuration = config;
 		this.panelProvider = panelProvider;
-		// openAction = openFileAction;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 602, 455);
 		contentPane = new JPanel();
