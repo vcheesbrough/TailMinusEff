@@ -2,6 +2,9 @@ package tailminuseff;
 
 import java.io.File;
 
+import org.junit.Ignore;
+
+@Ignore
 public class SimpleFileMonitorTests extends FileMonitorTests<SimpleFileMonitor> {
 
 	@Override

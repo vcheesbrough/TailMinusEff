@@ -36,7 +36,7 @@ public class FileLineModelDocumentAdaptor {
 
 	private void appendLineToDocument(String line) {
 		try {
-			document.insertString(document.getLength(), line, null);
+			document.insertString(document.getLength(), line+"\n", null);
 		} catch (final BadLocationException e) {
 			throw new RuntimeException(e);
 		}

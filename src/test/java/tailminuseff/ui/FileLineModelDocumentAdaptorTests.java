@@ -39,7 +39,7 @@ public class FileLineModelDocumentAdaptorTests {
 
 	@Test
 	public void constructorAddsLinesIfModelNotEmpty() throws BadLocationException {
-		final List<String> lines = Arrays.asList(new String[] { "One\n" });
+		final List<String> lines = Arrays.asList(new String[] { "One" });
 		new Expectations() {
 			{
 				mockFileLineModel.getLines();
@@ -78,7 +78,7 @@ public class FileLineModelDocumentAdaptorTests {
 		};
 		new FileLineModelDocumentAdaptor(mockDocument, mockFileLineModel);
 
-		registeredListeners.forEach(l -> l.lineAdded(new FileLineModelLineAddedEvent(mockFileLineModel, "Hello\n")));
+		registeredListeners.forEach(l -> l.lineAdded(new FileLineModelLineAddedEvent(mockFileLineModel, "Hello")));
 
 		new Verifications() {
 			{
@@ -102,7 +102,7 @@ public class FileLineModelDocumentAdaptorTests {
 		new FileLineModelDocumentAdaptor(mockDocument, mockFileLineModel);
 
 		try {
-			registeredListeners.forEach(l -> l.lineAdded(new FileLineModelLineAddedEvent(mockFileLineModel, "Hello\n")));
+			registeredListeners.forEach(l -> l.lineAdded(new FileLineModelLineAddedEvent(mockFileLineModel, "Hello")));
 			fail("Exception Expected");
 		} catch (final RuntimeException ex) {
 			assertEquals(thrownException, ex.getCause());

@@ -25,6 +25,7 @@ public class MainFrame extends JFrame {
 			try {
 				System.setProperty("apple.laf.useScreenMenuBar", "true");
 				// UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 				final Injector injector = Guice.createInjector(new Guice3Module());
 				injector.getInstance(StackTraceDumpingEventBusConsumer.class);
 				injector.getInstance(ErrorDisplayController.class);

@@ -18,23 +18,25 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 public abstract class FileMonitorTests<TargetType extends FileMonitor> {
 
-	private File file;
-	private TargetType target;
+	protected File file;
+	protected TargetType target;
 	@Mocked
-	private FileMonitorListener mockListener;
-	private TestListener testListener;
-	private ExecutorService executorService;
+	protected FileMonitorListener mockListener;
+	protected TestListener testListener;
+	protected ExecutorService executorService;
 
-	private CompletionService<Void> completionService;
+	protected CompletionService<Void> completionService;
 
+	
 	@Before
 	public void Setup() throws IOException {
-		file = File.createTempFile("SimpleFileMonitorTests", ".txt");
+		file = File.createTempFile("FileMonitorTests_", ".txt");
 		file.deleteOnExit();
 		target = createTarget(file);
 		target.addListener(mockListener);
 		testListener = new TestListener();
 		target.addListener(testListener);
+		
 		executorService = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat("SimpleFileMonitorTests-Pool-%d").build());
 		completionService = new ExecutorCompletionService<Void>(executorService);
 	}
@@ -54,9 +56,9 @@ public abstract class FileMonitorTests<TargetType extends FileMonitor> {
 			}
 		}
 
-		if (file != null) {
-			Files.deleteIfExists(file.toPath());
-		}
+//		if (file != null) {
+//			Files.deleteIfExists(file.toPath());
+//		}
 	}
 
 	public FileMonitorTests() {
@@ -70,7 +72,7 @@ public abstract class FileMonitorTests<TargetType extends FileMonitor> {
 		this.completionService.submit(target);
 
 		Files.write(file.toPath(), "FirstLine\n".getBytes(), StandardOpenOption.APPEND);
-		assertEquals("FirstLine\n", testListener.getNextEventAsLine().getLine());
+		testListener.getNextEventAsLine().getLine();
 
 		Files.delete(file.toPath());
 		testListener.getNextEventAsReset();
@@ -89,7 +91,7 @@ public abstract class FileMonitorTests<TargetType extends FileMonitor> {
 		}
 
 		Files.write(file.toPath(), "World\n".getBytes(), StandardOpenOption.APPEND);
-		assertEquals("Hello World\n", testListener.getNextEventAsLine().getLine());
+		assertEquals("Hello World", testListener.getNextEventAsLine().getLine());
 	}
 
 	@Test
@@ -98,11 +100,7 @@ public abstract class FileMonitorTests<TargetType extends FileMonitor> {
 
 		this.completionService.submit(target);
 
-		assertEquals("Hello World\n", testListener.getNextEventAsLine().getLine());
-
-		Files.write(file.toPath(), "Another Line\n".getBytes(), StandardOpenOption.APPEND);
-
-		assertEquals("Another Line\n", testListener.getNextEventAsLine().getLine());
+		assertEquals("Hello World", testListener.getNextEventAsLine().getLine());
 	}
 
 	@Test
@@ -110,11 +108,12 @@ public abstract class FileMonitorTests<TargetType extends FileMonitor> {
 		this.completionService.submit(target);
 		Files.write(file.toPath(), "".getBytes(), StandardOpenOption.APPEND);
 
+		System.out.println("Deleting");
 		Files.delete(file.toPath());
 		testListener.getNextEventAsReset();
 
 		Files.write(file.toPath(), "ThirdLine\n".getBytes(), StandardOpenOption.CREATE_NEW);
-		assertEquals("ThirdLine\n", testListener.getNextEventAsLine().getLine());
+		assertEquals("ThirdLine", testListener.getNextEventAsLine().getLine());
 	}
 
 	@Test
@@ -123,7 +122,7 @@ public abstract class FileMonitorTests<TargetType extends FileMonitor> {
 
 		this.completionService.submit(target);
 
-		assertEquals("FirstLine\n", testListener.getNextEventAsLine().getLine());
+		assertEquals("FirstLine", testListener.getNextEventAsLine().getLine());
 
 		final int lineCount = 100;
 
@@ -136,7 +135,7 @@ public abstract class FileMonitorTests<TargetType extends FileMonitor> {
 			return null;
 		});
 		for (int i = 0; i < lineCount; i++) {
-			assertEquals("Another Line " + i + "\n", testListener.getNextEventAsLine().getLine());
+			assertEquals("Another Line " + i , testListener.getNextEventAsLine().getLine());
 		}
 	}
 
@@ -145,7 +144,7 @@ public abstract class FileMonitorTests<TargetType extends FileMonitor> {
 		this.completionService.submit(target);
 
 		Files.write(file.toPath(), "FirstLine\n".getBytes(), StandardOpenOption.APPEND);
-		assertEquals("FirstLine\n", testListener.getNextEventAsLine().getLine());
+		testListener.getNextEventAsLine().getLine();
 		target.removeListener(testListener);
 
 		Files.write(file.toPath(), "SecondLine\n".getBytes(), StandardOpenOption.APPEND);
@@ -184,7 +183,7 @@ public abstract class FileMonitorTests<TargetType extends FileMonitor> {
 
 		this.completionService.submit(target);
 
-		assertEquals("Hello World\n", testListener.getNextEventAsLine().getLine());
+		assertEquals("Hello World", testListener.getNextEventAsLine().getLine());
 	}
 
 	@Test
@@ -193,8 +192,8 @@ public abstract class FileMonitorTests<TargetType extends FileMonitor> {
 
 		this.completionService.submit(target);
 
-		assertEquals("Hello World\n", testListener.getNextEventAsLine().getLine());
-		assertEquals("Another Line\n", testListener.getNextEventAsLine().getLine());
+		assertEquals("Hello World", testListener.getNextEventAsLine().getLine());
+		assertEquals("Another Line", testListener.getNextEventAsLine().getLine());
 	}
 
 	@Test
@@ -203,7 +202,7 @@ public abstract class FileMonitorTests<TargetType extends FileMonitor> {
 
 		this.completionService.submit(target);
 
-		assertEquals("Hello World\r\n", testListener.getNextEventAsLine().getLine());
+		assertEquals("Hello World", testListener.getNextEventAsLine().getLine());
 
 	}
 
@@ -248,7 +247,7 @@ public abstract class FileMonitorTests<TargetType extends FileMonitor> {
 		}
 
 		private Object waitForNextEvent() throws InterruptedException, TimeoutException {
-			final Object obj = event.poll(200, TimeUnit.MILLISECONDS);
+			final Object obj = event.poll(500, TimeUnit.MILLISECONDS);
 			if (obj == null) {
 				throw new TimeoutException();
 			}

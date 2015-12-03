@@ -14,7 +14,7 @@ public class Guice3Module extends AbstractModule {
 	protected void configure() {
 		// bind(MainFrame.class);
 		// bind(OpenFileAction.class);
-		install(new FactoryModuleBuilder().implement(FileMonitor.class, SimpleFileMonitor.class).build(FileMonitorFactory.class));
+		install(new FactoryModuleBuilder().implement(FileMonitor.class, NioFileMonitor.class).build(FileMonitorFactory.class));
 	}
 
 	@Provides
