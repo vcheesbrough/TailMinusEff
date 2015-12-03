@@ -8,21 +8,21 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 public class MultiFileModel {
-	private final FileMonitorFactory fileMonitorFactory;
 
 	private final List<ActiveMonitor> models = new ArrayList<MultiFileModel.ActiveMonitor>();
 
 	private final ExecutorService executorService;
 
+	private FileLineModelFactory modelFactory;
+
 	@Inject
-	public MultiFileModel(FileMonitorFactory factory, @FileExectutor ExecutorService executorService) {
-		this.fileMonitorFactory = factory;
+	public MultiFileModel(FileLineModelFactory modelFactory, @FileExectutor ExecutorService executorService) {
+		this.modelFactory = modelFactory;
 		this.executorService = executorService;
 	}
 
 	public synchronized FileLineModel openFile(File newFile) {
-		final FileMonitor monitor = fileMonitorFactory.createForFile(newFile);
-		final FileLineModel model = new FileLineModel(monitor);
+		final FileLineModel model = modelFactory.createForFile(newFile);
 		final Future<Void> future = executorService.submit(model.getFileMonitor());
 		models.add(new ActiveMonitor(model, future));
 		return model;

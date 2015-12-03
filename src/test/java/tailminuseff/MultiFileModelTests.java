@@ -1,7 +1,6 @@
 package tailminuseff;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.concurrent.*;
@@ -14,7 +13,9 @@ public class MultiFileModelTests {
 
 	private MultiFileModel target;
 	@Mocked
-	private FileMonitorFactory mockMonitorFactory;
+	private FileLineModelFactory mockModelFactory;
+	@Mocked
+	private FileLineModel mockLineModel;
 	@Mocked
 	private FileMonitor mockMonitor;
 	@Mocked
@@ -24,11 +25,17 @@ public class MultiFileModelTests {
 	public void setUp() throws Exception {
 		new Expectations() {
 			{
-				mockMonitorFactory.createForFile((File) any);
+				mockLineModel.getFileMonitor();
 				returns(mockMonitor);
 			}
 		};
-		target = new MultiFileModel(mockMonitorFactory, mockFileExecutorService);
+		new Expectations() {
+			{
+				mockModelFactory.createForFile((File) any);
+				returns(mockLineModel);
+			}
+		};
+		target = new MultiFileModel(mockModelFactory, mockFileExecutorService);
 	}
 
 	@After
@@ -72,11 +79,11 @@ public class MultiFileModelTests {
 	}
 
 	@Test
-	public void openFileInvokesMonitorFactory(@Mocked File file) {
+	public void openFileInvokesFactory(@Mocked File file) throws Exception {
 		target.openFile(file);
 		new Verifications() {
 			{
-				mockMonitorFactory.createForFile(file);
+				mockModelFactory.createForFile(file);
 			}
 		};
 	}

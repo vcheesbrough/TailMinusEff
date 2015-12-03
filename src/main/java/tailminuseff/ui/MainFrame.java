@@ -1,18 +1,41 @@
 package tailminuseff.ui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.EventQueue;
+import java.awt.Rectangle;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.inject.Inject;
-import javax.swing.*;
+import javax.inject.Singleton;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
-import tailminuseff.*;
+import tailminuseff.Guice3Module;
+import tailminuseff.StackTraceDumpingEventBusConsumer;
 import tailminuseff.config.Configuration;
-import tailminuseff.ui.actions.*;
+import tailminuseff.ui.actions.ExitAction;
+import tailminuseff.ui.actions.OpenFileAction;
 
-import com.google.inject.*;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Provider;
+import com.google.inject.grapher.graphviz.GraphvizGrapher;
+import com.google.inject.grapher.graphviz.GraphvizModule;
 
+@Singleton
 public class MainFrame extends JFrame {
 
 	private static final long serialVersionUID = -1197142382069507042L;
@@ -25,16 +48,29 @@ public class MainFrame extends JFrame {
 			try {
 				System.setProperty("apple.laf.useScreenMenuBar", "true");
 				// UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-				final Injector injector = Guice.createInjector(new Guice3Module());
+				UIManager.setLookAndFeel(UIManager
+						.getSystemLookAndFeelClassName());
+				final Injector injector = Guice
+						.createInjector(new Guice3Module());
 				injector.getInstance(StackTraceDumpingEventBusConsumer.class);
 				injector.getInstance(ErrorDisplayController.class);
 				injector.getInstance(MainFrame.class).setVisible(true);
-				// frame.setVisible(true);
+				graph("guice-graph.dot", injector);
 			} catch (final Exception e) {
 				e.printStackTrace();
 			}
 		});
+	}
+
+	private static void graph(String filename, Injector demoInjector)
+			throws IOException {
+		PrintWriter out = new PrintWriter(new File(filename), "UTF-8");
+
+		Injector injector = Guice.createInjector(new GraphvizModule());
+		GraphvizGrapher grapher = injector.getInstance(GraphvizGrapher.class);
+		grapher.setOut(out);
+		grapher.setRankdir("TB");
+		grapher.graph(demoInjector);
 	}
 
 	private final ComponentListener boundsListener = new ComponentAdapter() {
@@ -74,7 +110,8 @@ public class MainFrame extends JFrame {
 			final FileContentDisplayPanel panel = panelProvider.get();
 			panel.setFileLineModel(evt.getFileLineModel());
 			tabbedPane.add(panel);
-			tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(panel), panel.getFileTabComponent());
+			tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(panel),
+					panel.getFileTabComponent());
 		}
 	};
 	private final JTabbedPane tabbedPane;
@@ -82,7 +119,10 @@ public class MainFrame extends JFrame {
 
 	@SuppressWarnings("unused")
 	@Inject
-	public MainFrame(MultiFileModelSwingAdaptor multiFileModel, Configuration config, OpenFileAction openFileAction, ExitAction exitAction, Provider<FileContentDisplayPanel> panelProvider) {
+	public MainFrame(MultiFileModelSwingAdaptor multiFileModel,
+			Configuration config, OpenFileAction openFileAction,
+			ExitAction exitAction,
+			Provider<FileContentDisplayPanel> panelProvider) {
 		this.configuration = config;
 		this.panelProvider = panelProvider;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

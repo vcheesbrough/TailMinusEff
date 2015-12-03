@@ -108,7 +108,6 @@ public abstract class FileMonitorTests<TargetType extends FileMonitor> {
 		this.completionService.submit(target);
 		Files.write(file.toPath(), "".getBytes(), StandardOpenOption.APPEND);
 
-		System.out.println("Deleting");
 		Files.delete(file.toPath());
 		testListener.getNextEventAsReset();
 

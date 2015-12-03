@@ -3,6 +3,8 @@ package tailminuseff;
 import java.io.File;
 import java.util.*;
 
+import javax.inject.Inject;
+
 import eventutil.*;
 
 public class FileLineModel implements EventProducer<FileLineModelListener> {
@@ -29,6 +31,7 @@ public class FileLineModel implements EventProducer<FileLineModelListener> {
 		}
 	};
 
+	@Inject
 	public FileLineModel(FileMonitor monitor) {
 		super();
 		this.fileMonitor = monitor;
