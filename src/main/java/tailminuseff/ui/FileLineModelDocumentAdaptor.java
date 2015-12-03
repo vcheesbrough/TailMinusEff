@@ -18,9 +18,13 @@ public class FileLineModelDocumentAdaptor {
 
 		@Override
 		public void reset(FileLineModelResetEvent evt) {
-			throw new UnsupportedOperationException();
+			try {
+				
+				document.remove(0, document.getLength());
+			} catch (BadLocationException e) {
+				throw new RuntimeException(e);
+			}
 		}
-
 	};
 
 	public FileLineModelDocumentAdaptor(Document document, FileLineModel fileLineModel) {

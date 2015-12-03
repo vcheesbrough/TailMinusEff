@@ -1,7 +1,6 @@
 package tailminuseff;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.*;
 import java.nio.file.*;
@@ -75,6 +74,15 @@ public abstract class FileMonitorTests<TargetType extends FileMonitor> {
 		testListener.getNextEventAsLine().getLine();
 
 		Files.delete(file.toPath());
+		testListener.getNextEventAsReset();
+	}
+	
+	@Test
+	public void truncatedFileGeneratesResetEvent() throws Exception {
+		Files.write(file.toPath(), "FirstLine\n".getBytes(), StandardOpenOption.APPEND);
+		this.completionService.submit(target);
+		testListener.getNextEventAsLine().getLine();
+		Files.write(file.toPath(), "".getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
 		testListener.getNextEventAsReset();
 	}
 

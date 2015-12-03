@@ -41,9 +41,9 @@ public class NioFileMonitor extends FileMonitor {
 					readEntireFile();
 				} catch (final NoSuchFileException|AccessDeniedException exception) {
 					// expected
-					invokeListenersWithReset();
 					Thread.sleep(100);
 				}
+				invokeListenersWithReset();
 			}
 		} catch (final InterruptedException e) {
 			// expected
