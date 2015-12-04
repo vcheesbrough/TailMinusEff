@@ -16,6 +16,9 @@ public class ApplicationExecutors {
 
 	@Inject
 	public ApplicationExecutors(EventBus eventBus) {
+        this.unhandledExceptionConsumer = (thread, throwable) -> {
+            eventBus.post(new UnhandledException(throwable, thread, "Unknown error"));
+        };
 		this.eventBus = eventBus;
 	}
 
@@ -40,7 +43,5 @@ public class ApplicationExecutors {
 		return new ExceptionNotifyingScheduledExecutorServiceDecorator(Executors.newScheduledThreadPool(1, threadFactoryBuilder.build()), unhandledExceptionConsumer);
 	}
 
-	private final UnhandledExceptionConsumer unhandledExceptionConsumer = (thread, throwable) -> {
-		eventBus.post(new UnhandledException(throwable, thread, "Unknown error"));
-	};
+	private final UnhandledExceptionConsumer unhandledExceptionConsumer;
 }
