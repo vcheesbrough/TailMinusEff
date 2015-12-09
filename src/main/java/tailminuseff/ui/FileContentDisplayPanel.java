@@ -1,60 +1,59 @@
 package tailminuseff.ui;
 
 import java.awt.*;
-
 import javax.inject.Inject;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
 import tailminuseff.FileLineModel;
 
 public class FileContentDisplayPanel extends JPanel {
-	private static final long serialVersionUID = -1364890050702175341L;
-	private final JTextPane textPane;
 
-	private FileLineModel fileLineModel;
+    private static final long serialVersionUID = -1364890050702175341L;
+    private final JTextPane textPane;
 
-	@Inject
-	public FileContentDisplayPanel() {
-		setBorder(new EmptyBorder(0, 0, 0, 0));
-		setLayout(new BorderLayout(0, 0));
+    private FileLineModel fileLineModel;
 
-		final JScrollPane scrollPane = new JScrollPane();
-		add(scrollPane, BorderLayout.CENTER);
+    @Inject
+    public FileContentDisplayPanel() {
+        setBorder(new EmptyBorder(0, 0, 0, 0));
+        setLayout(new BorderLayout(0, 0));
 
-		textPane = new JTextPane();
-		textPane.setFont(new Font("Lucida Sans Typewriter", Font.PLAIN, 13));
-		textPane.setEditable(false);
-		scrollPane.setViewportView(textPane);
-	}
+        final JScrollPane scrollPane = new JScrollPane();
+        add(scrollPane, BorderLayout.CENTER);
 
-	public FileLineModel getFileLineModel() {
-		return fileLineModel;
-	}
+        textPane = new JTextPane();
+        textPane.setFont(new Font("Lucida Sans Typewriter", Font.PLAIN, 13));
+        textPane.setEditable(false);
+        scrollPane.setViewportView(textPane);
+    }
 
-	public void setFileLineModel(FileLineModel fileLineModel) {
-		if (this.fileLineModel != null) {
-			throw new IllegalStateException();
-		}
-		this.fileLineModel = fileLineModel;
-		new FileLineModelDocumentAdaptor(textPane.getDocument(), this.fileLineModel);
-		setName(this.fileLineModel.getFile().getName());
-		if (fileTabComponent != null) {
-			fileTabComponent.setModel(fileLineModel);
-		}
-	}
+    public FileLineModel getFileLineModel() {
+        return fileLineModel;
+    }
 
-	private FileTabComponent fileTabComponent;
+    public void setFileLineModel(FileLineModel fileLineModel) {
+        if (this.fileLineModel != null) {
+            throw new IllegalStateException();
+        }
+        this.fileLineModel = fileLineModel;
+        new FileLineModelDocumentAdaptor(textPane.getDocument(), this.fileLineModel);
+        setName(this.fileLineModel.getFile().getName());
+        if (fileTabComponent != null) {
+            fileTabComponent.setModel(fileLineModel);
+        }
+    }
 
-	public FileTabComponent getFileTabComponent() {
-		return fileTabComponent;
-	}
+    private FileTabComponent fileTabComponent;
 
-	@Inject
-	public void setFileTabComponent(FileTabComponent tabComponent) {
-		this.fileTabComponent = tabComponent;
-		if (getFileLineModel() != null) {
-			fileTabComponent.setModel(getFileLineModel());
-		}
-	}
+    public FileTabComponent getFileTabComponent() {
+        return fileTabComponent;
+    }
+
+    @Inject
+    public void setFileTabComponent(FileTabComponent tabComponent) {
+        this.fileTabComponent = tabComponent;
+        if (getFileLineModel() != null) {
+            fileTabComponent.setModel(getFileLineModel());
+        }
+    }
 }

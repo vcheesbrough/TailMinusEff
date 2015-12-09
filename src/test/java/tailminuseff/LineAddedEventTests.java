@@ -4,8 +4,8 @@ import org.junit.Test;
 
 public class LineAddedEventTests {
 
-	@Test
-	public void smokeTestToString() {
-		new LineAddedEvent(this, "Hello").toString();
-	}
+    @Test
+    public void smokeTestToString() {
+        new LineAddedEvent(this, "Hello").toString();
+    }
 }

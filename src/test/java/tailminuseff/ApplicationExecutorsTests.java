@@ -1,34 +1,33 @@
 package tailminuseff;
 
-import static org.junit.Assert.assertNotNull;
-import mockit.Mocked;
-
-import org.junit.*;
-
 import com.google.common.eventbus.EventBus;
+import mockit.Mocked;
+import org.junit.*;
+import static org.junit.Assert.assertNotNull;
 
 public class ApplicationExecutorsTests {
-	private ApplicationExecutors target;
-	@Mocked
-	private EventBus mockEventBus;
 
-	@Before
-	public void Setup() {
-		target = new ApplicationExecutors(mockEventBus);
-	}
+    private ApplicationExecutors target;
+    @Mocked
+    private EventBus mockEventBus;
 
-	@Test
-	public void getFilesExecutorServiceReturnsInstance() {
-		assertNotNull(target.createFilesExecutorService());
-	}
+    @Before
+    public void Setup() {
+        target = new ApplicationExecutors(mockEventBus);
+    }
 
-	@Test
-	public void getGeneralExecutorServiceReturnsInstance() {
-		assertNotNull(target.createGeneralExecutorService());
-	}
+    @Test
+    public void getFilesExecutorServiceReturnsInstance() {
+        assertNotNull(target.createFilesExecutorService());
+    }
 
-	@Test
-	public void getScheduledExecutorServiceReturnsInstance() {
-		assertNotNull(target.createScheduledExecutorService());
-	}
+    @Test
+    public void getGeneralExecutorServiceReturnsInstance() {
+        assertNotNull(target.createGeneralExecutorService());
+    }
+
+    @Test
+    public void getScheduledExecutorServiceReturnsInstance() {
+        assertNotNull(target.createScheduledExecutorService());
+    }
 }

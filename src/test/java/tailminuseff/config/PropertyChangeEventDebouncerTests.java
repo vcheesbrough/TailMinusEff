@@ -4,8 +4,8 @@ import org.junit.Test;
 
 public class PropertyChangeEventDebouncerTests {
 
-	@Test
-	public void test() {
-	}
+    @Test
+    public void test() {
+    }
 
 }
