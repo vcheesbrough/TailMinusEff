@@ -1,4 +1,4 @@
-package tailminuseff;
+package tailminuseff.io;
 
 import com.google.inject.assistedinject.Assisted;
 import java.io.*;

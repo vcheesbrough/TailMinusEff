@@ -1,5 +1,6 @@
 package tailminuseff;
 
+import tailminuseff.io.FileMonitor;
 import java.io.File;
 import java.util.concurrent.*;
 import mockit.*;

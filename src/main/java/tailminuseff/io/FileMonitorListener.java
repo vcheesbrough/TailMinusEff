@@ -1,4 +1,4 @@
-package tailminuseff;
+package tailminuseff.io;
 
 public interface FileMonitorListener extends java.util.EventListener {
 

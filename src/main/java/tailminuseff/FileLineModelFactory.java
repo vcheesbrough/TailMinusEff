@@ -1,5 +1,6 @@
 package tailminuseff;
 
+import tailminuseff.io.FileMonitorFactory;
 import java.io.File;
 import javax.inject.Inject;
 import javax.inject.Singleton;

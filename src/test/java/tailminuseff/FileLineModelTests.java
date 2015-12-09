@@ -1,5 +1,10 @@
 package tailminuseff;
 
+import tailminuseff.io.FileResetEvent;
+import tailminuseff.io.FileMonitorListener;
+import tailminuseff.io.FileMonitor;
+import tailminuseff.io.LineAddedEvent;
+import tailminuseff.io.FileMonitorFactory;
 import java.io.File;
 import java.util.LinkedList;
 import mockit.*;

@@ -1,5 +1,6 @@
-package tailminuseff;
+package tailminuseff.io;
 
+import tailminuseff.io.SimpleFileMonitor;
 import java.io.File;
 import org.junit.Ignore;
 

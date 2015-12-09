@@ -1,4 +1,4 @@
-package tailminuseff;
+package tailminuseff.io;
 
 import java.io.File;
 

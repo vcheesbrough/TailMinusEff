@@ -1,5 +1,9 @@
 package tailminuseff;
 
+import tailminuseff.io.LineAddedEvent;
+import tailminuseff.io.FileMonitor;
+import tailminuseff.io.FileMonitorListener;
+import tailminuseff.io.FileResetEvent;
 import eventutil.*;
 import java.io.File;
 import java.util.*;

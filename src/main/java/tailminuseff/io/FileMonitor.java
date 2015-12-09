@@ -1,4 +1,4 @@
-package tailminuseff;
+package tailminuseff.io;
 
 import eventutil.*;
 import java.io.File;

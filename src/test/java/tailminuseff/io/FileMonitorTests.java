@@ -1,5 +1,9 @@
-package tailminuseff;
+package tailminuseff.io;
 
+import tailminuseff.io.FileResetEvent;
+import tailminuseff.io.FileMonitorListener;
+import tailminuseff.io.FileMonitor;
+import tailminuseff.io.LineAddedEvent;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.io.*;
 import java.nio.file.*;

@@ -1,5 +1,6 @@
-package tailminuseff;
+package tailminuseff.io;
 
+import tailminuseff.io.NioFileMonitor;
 import java.io.File;
 
 public class NioFileMonitorTests extends FileMonitorTests<NioFileMonitor> {

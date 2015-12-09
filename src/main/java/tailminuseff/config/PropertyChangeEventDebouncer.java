@@ -17,6 +17,18 @@ public class PropertyChangeEventDebouncer {
 
     @Inject
     public PropertyChangeEventDebouncer(ScheduledExecutorService scheduledExecutorService) {
+        this.inputListener = evt -> {
+            if (future != null) {
+                future.cancel(false);
+            }
+            future = scheduledExecutorService.schedule(() -> {
+                synchronized (lock) {
+                    final PropertyChangeEvent newEvt = new PropertyChangeEvent(PropertyChangeEventDebouncer.this, null, null, null);
+                    outputEventListeners.forEachLisener(listener -> listener.propertyChange(newEvt));
+                    return null;
+                }
+            }, maximumEventFrequencyMs, TimeUnit.MILLISECONDS);
+        };
         this.scheduledExecutorService = scheduledExecutorService;
     }
 
@@ -26,18 +38,7 @@ public class PropertyChangeEventDebouncer {
 
     private ScheduledFuture<Void> future;
 
-    private final PropertyChangeListener inputListener = evt -> {
-        if (future != null) {
-            future.cancel(false);
-        }
-        future = scheduledExecutorService.schedule(() -> {
-            synchronized (lock) {
-                final PropertyChangeEvent newEvt = new PropertyChangeEvent(PropertyChangeEventDebouncer.this, null, null, null);
-                outputEventListeners.forEachLisener(listener -> listener.propertyChange(newEvt));
-                return null;
-            }
-        }, maximumEventFrequencyMs, TimeUnit.MILLISECONDS);
-    };
+    private final PropertyChangeListener inputListener;
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         outputEventListeners.addListener(listener);
