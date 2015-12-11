@@ -1,11 +1,11 @@
-package tailminuseff.ui.actions;
+package tailminuseff.swing.actions;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import javax.inject.*;
 import javax.swing.*;
 import tailminuseff.config.Configuration;
-import tailminuseff.ui.MultiFileModelSwingAdaptor;
+import tailminuseff.swing.MultiFileModelSwingAdaptor;
 
 @Singleton
 public class OpenFileAction extends AbstractAction {

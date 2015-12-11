@@ -1,5 +1,6 @@
-package tailminuseff.ui.actions;
+package tailminuseff.swing.actions;
 
+import tailminuseff.swing.actions.ExitAction;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import mockit.*;

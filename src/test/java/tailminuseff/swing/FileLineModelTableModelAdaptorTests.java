@@ -1,5 +1,6 @@
-package tailminuseff.ui;
+package tailminuseff.swing;
 
+import tailminuseff.swing.FileLineModelTableModelAdaptor;
 import java.util.*;
 import javax.swing.SwingUtilities;
 import javax.swing.event.*;

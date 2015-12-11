@@ -1,5 +1,9 @@
-package tailminuseff.ui;
+package tailminuseff.swing;
 
+import tailminuseff.swing.MultiFileModelSwingAdaptor;
+import tailminuseff.swing.FileClosedEvent;
+import tailminuseff.swing.FileOpenedEvent;
+import tailminuseff.swing.MultiFileModelSwingAdaptorListener;
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.io.File;

@@ -1,4 +1,4 @@
-package tailminuseff.ui;
+package tailminuseff.swing;
 
 import java.util.EventObject;
 import tailminuseff.FileLineModel;

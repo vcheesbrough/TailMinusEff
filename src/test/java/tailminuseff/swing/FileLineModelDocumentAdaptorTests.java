@@ -1,5 +1,6 @@
-package tailminuseff.ui;
+package tailminuseff.swing;
 
+import tailminuseff.swing.FileLineModelDocumentAdaptor;
 import java.util.*;
 import javax.swing.text.*;
 import mockit.*;

@@ -1,4 +1,4 @@
-package tailminuseff.ui;
+package tailminuseff.swing;
 
 import com.google.common.eventbus.EventBus;
 import eventutil.*;

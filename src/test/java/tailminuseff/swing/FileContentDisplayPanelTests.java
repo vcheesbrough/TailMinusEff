@@ -1,5 +1,7 @@
-package tailminuseff.ui;
+package tailminuseff.swing;
 
+import tailminuseff.swing.FileTabComponent;
+import tailminuseff.swing.FileContentDisplayPanel;
 import mockit.*;
 import org.junit.*;
 import static org.junit.Assert.assertSame;

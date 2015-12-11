@@ -1,4 +1,4 @@
-package tailminuseff.ui;
+package tailminuseff.swing;
 
 import java.awt.*;
 import javax.inject.Inject;

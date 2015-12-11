@@ -1,10 +1,10 @@
-package tailminuseff.ui.actions;
+package tailminuseff.swing.actions;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
 import javax.inject.*;
 import javax.swing.*;
-import tailminuseff.ui.MultiFileModelSwingAdaptor;
+import tailminuseff.swing.MultiFileModelSwingAdaptor;
 
 @Singleton
 public class CloseFileAction extends AbstractAction {

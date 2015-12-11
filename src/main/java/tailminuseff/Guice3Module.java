@@ -12,7 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import tailminuseff.config.Configuration;
 import tailminuseff.config.ConfigurationFactory;
-import tailminuseff.ui.MainFrame;
+import tailminuseff.swing.MainFrame;
 
 public class Guice3Module extends AbstractModule {
 

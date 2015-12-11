@@ -1,10 +1,11 @@
-package tailminuseff.ui;
+package tailminuseff.swing;
 
+import tailminuseff.swing.FileTabComponent;
 import mockit.Mocked;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import tailminuseff.FileLineModel;
-import tailminuseff.ui.actions.CloseFileAction;
+import tailminuseff.swing.actions.CloseFileAction;
 
 public class FileTabComponentTests {
 

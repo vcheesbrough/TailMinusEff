@@ -1,4 +1,4 @@
-package tailminuseff.ui;
+package tailminuseff.swing;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -29,8 +29,8 @@ import javax.swing.border.EmptyBorder;
 import tailminuseff.Guice3Module;
 import tailminuseff.StackTraceDumpingEventBusConsumer;
 import tailminuseff.config.Configuration;
-import tailminuseff.ui.actions.ExitAction;
-import tailminuseff.ui.actions.OpenFileAction;
+import tailminuseff.swing.actions.ExitAction;
+import tailminuseff.swing.actions.OpenFileAction;
 
 @Singleton
 public class MainFrame extends JFrame {

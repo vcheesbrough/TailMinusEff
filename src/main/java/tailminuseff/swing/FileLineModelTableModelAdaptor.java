@@ -1,4 +1,4 @@
-package tailminuseff.ui;
+package tailminuseff.swing;
 
 import javax.swing.SwingUtilities;
 import javax.swing.table.*;
