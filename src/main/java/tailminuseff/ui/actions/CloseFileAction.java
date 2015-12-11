@@ -18,7 +18,7 @@ public class CloseFileAction extends AbstractAction {
         this.model = model;
         putValue(NAME, "Close");
         putValue(SHORT_DESCRIPTION, "Close");
-        putValue(SMALL_ICON, new ImageIcon(this.getClass().getResource("Delete.png")));
+        putValue(SMALL_ICON, new ImageIcon(this.getClass().getResource("/icons/Delete.png")));
     }
 
     @Override
