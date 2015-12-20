@@ -10,20 +10,28 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javax.inject.Inject;
+import org.controlsfx.control.action.ActionUtils;
 import tailminuseff.config.Configuration;
+import tailminuseff.fx.actions.ExitAction;
 
 public class MainWindowController implements Initializable {
 
     private final Configuration config;
     private final FileViewControllerFactory fileViewFactory;
+    private final ExitAction exitAction;
+
+    @FXML
+    private MenuItem exitMenuItem;
 
     @Inject
-    public MainWindowController(Configuration config, FileViewControllerFactory fileViewFactory) {
+    public MainWindowController(Configuration config, FileViewControllerFactory fileViewFactory, ExitAction exitAction) {
         this.config = config;
         this.fileViewFactory = fileViewFactory;
+        this.exitAction = exitAction;
     }
 
     @FXML
@@ -33,6 +41,7 @@ public class MainWindowController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        ActionUtils.configureMenuItem(exitAction, exitMenuItem);
         this.config.getOpenFiles().forEach(f -> OpenFile(f));
     }
 
@@ -46,5 +55,4 @@ public class MainWindowController implements Initializable {
             Logger.getLogger(MainWindowController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
 }
