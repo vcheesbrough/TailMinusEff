@@ -8,8 +8,8 @@ import java.util.concurrent.ExecutorService;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TextArea;
 import javax.inject.Inject;
+import org.fxmisc.richtext.CodeArea;
 import tailminuseff.FileExectutor;
 import tailminuseff.io.FileMonitor;
 import tailminuseff.io.FileMonitorFactory;
@@ -20,7 +20,7 @@ import tailminuseff.io.LineAddedEvent;
 public class FileViewController implements Initializable {
 
     @FXML
-    private TextArea text;
+    private CodeArea text;
 
     private final ExecutorService executorService;
     private final FileMonitor fileMonitor;

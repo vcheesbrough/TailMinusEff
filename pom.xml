@@ -27,6 +27,11 @@
             <version>3.3.2</version>
         </dependency>
         <dependency>
+            <groupId>org.fxmisc.richtext</groupId>
+            <artifactId>richtextfx</artifactId>
+            <version>0.6.10</version>
+        </dependency>
+        <dependency>
             <groupId>org.jmockit</groupId>
             <artifactId>jmockit</artifactId>
             <version>1.14</version>
