@@ -11,6 +11,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import tailminuseff.config.Configuration;
 import tailminuseff.config.ConfigurationFactory;
+import tailminuseff.fx.FileViewController;
+import tailminuseff.fx.FileViewControllerFactory;
 import tailminuseff.io.FileMonitor;
 import tailminuseff.io.FileMonitorFactory;
 import tailminuseff.io.NioFileMonitor;
@@ -27,6 +29,7 @@ public class Guice3Module extends AbstractModule {
     protected void configure() {
         bind(MainFrame.class);
         install(new FactoryModuleBuilder().implement(FileMonitor.class, NioFileMonitor.class).build(FileMonitorFactory.class));
+        install(new FactoryModuleBuilder().implement(FileViewController.class, FileViewController.class).build(FileViewControllerFactory.class));
     }
 
     @Provides
