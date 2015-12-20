@@ -1,37 +1,88 @@
 package tailminuseff.fx;
 
+import com.google.inject.Injector;
+import java.awt.Rectangle;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import tailminuseff.Guice3Module;
+import tailminuseff.config.Configuration;
 
 
 public class MainApp extends Application {
 
+    private ConfigMainWindowBoundsBinder configBoundsBinder = null;
+
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/MainWindow.fxml"));
-        
+        Injector injector = Guice3Module.CreateInjector();
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/MainWindow.fxml"));
+        loader.setControllerFactory(injector::getInstance);
+
+        Parent root = loader.<Parent>load();
+
         Scene scene = new Scene(root);
-        scene.getStylesheets().add("/styles/mainwindow.css");
-        
+        scene.getStylesheets().add("/styles/fx-styles.css");
+
         stage.setTitle("TailMinusEff");
         stage.setScene(scene);
+        
+        configBoundsBinder = new ConfigMainWindowBoundsBinder(injector.getInstance(Configuration.class), stage);
+
         stage.show();
     }
 
-    /**
-     * The main() method is ignored in correctly deployed JavaFX application.
-     * main() serves only as fallback in case the application can not be
-     * launched through deployment artifacts, e.g., in IDEs with limited FX
-     * support. NetBeans ignores main().
-     *
-     * @param args the command line arguments
-     */
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+        if (configBoundsBinder != null) {
+            configBoundsBinder.Unbind();
+        }
+    }
+
+
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private class ConfigMainWindowBoundsBinder {
+
+        private final Configuration config;
+        private final Stage stage;
+
+        private final ChangeListener<Number> listener;
+
+        public ConfigMainWindowBoundsBinder(Configuration config, Stage stage) {
+            this.config = config;
+            this.stage = stage;
+            listener = (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
+                Rectangle r = new Rectangle((int) stage.getX(), (int) stage.getY(), (int) stage.getWidth(), (int) stage.getHeight());
+                config.setMainWindowBounds(r);
+            };
+            stage.setWidth(config.getMainWindowBounds().width);
+            stage.setHeight(config.getMainWindowBounds().height);
+            stage.setX(config.getMainWindowBounds().x);
+            stage.setY(config.getMainWindowBounds().y);
+
+            stage.xProperty().addListener(listener);
+            stage.yProperty().addListener(listener);
+            stage.widthProperty().addListener(listener);
+            stage.heightProperty().addListener(listener);
+
+        }
+
+        public void Unbind() {
+            stage.xProperty().removeListener(listener);
+            stage.yProperty().removeListener(listener);
+            stage.widthProperty().removeListener(listener);
+            stage.heightProperty().removeListener(listener);
+        }
     }
 
 }

@@ -47,8 +47,7 @@ public class MainFrame extends JFrame {
                 // UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
                 UIManager.setLookAndFeel(UIManager
                         .getSystemLookAndFeelClassName());
-                final Injector injector = Guice
-                        .createInjector(new Guice3Module());
+                Injector injector = Guice3Module.CreateInjector();
                 injector.getInstance(StackTraceDumpingEventBusConsumer.class);
                 injector.getInstance(ErrorDisplayController.class);
                 injector.getInstance(MainFrame.class).setVisible(true);
@@ -58,6 +57,7 @@ public class MainFrame extends JFrame {
             }
         });
     }
+
 
     private static void graph(String filename, Injector demoInjector)
             throws IOException {
