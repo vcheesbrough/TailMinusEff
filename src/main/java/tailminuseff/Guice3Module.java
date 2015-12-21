@@ -17,7 +17,6 @@ import tailminuseff.fx.FileViewControllerFactory;
 import tailminuseff.io.FileMonitor;
 import tailminuseff.io.FileMonitorFactory;
 import tailminuseff.io.NioFileMonitor;
-import tailminuseff.swing.MainFrame;
 
 public class Guice3Module extends AbstractModule {
 
@@ -26,10 +25,6 @@ public class Guice3Module extends AbstractModule {
         return injector;
     }
 
-    public static Injector CreateInjector() {
-        final Injector injector = Guice.createInjector(new Guice3Module(null));
-        return injector;
-    }
     private final Stage stage;
 
     private Guice3Module(Stage stage) {
@@ -38,7 +33,6 @@ public class Guice3Module extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(MainFrame.class);
         install(new FactoryModuleBuilder().implement(FileMonitor.class, NioFileMonitor.class).build(FileMonitorFactory.class));
         install(new FactoryModuleBuilder().implement(FileViewController.class, FileViewController.class).build(FileViewControllerFactory.class));
     }
