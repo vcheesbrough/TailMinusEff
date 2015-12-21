@@ -70,4 +70,10 @@ public class Configuration implements Serializable {
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
+
+    @Override
+    public String toString() {
+        return "Configuration{" + "mainWindowBounds=" + mainWindowBounds + ", openDialogDirectory=" + openDialogDirectory + ", openFiles=" + openFiles + '}';
+    }
+
 }

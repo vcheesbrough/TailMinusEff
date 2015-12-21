@@ -42,11 +42,11 @@
             <version>1.14</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.jmockit</groupId>
             <artifactId>jmockit-coverage</artifactId>
-            <version>1.14</version>
-        </dependency>
+                    <version>1.14</version>
+        </dependency>-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -116,9 +116,9 @@
                     <includes>
                         <include>**/*Tests.java</include>                        
                     </includes>
-                    <!--                <systemPropertyVariables>
-                        <java.util.logging.config.file>src/test/resources/logging.properties</java.util.logging.config.file>
-                    </systemPropertyVariables>-->
+                    <systemPropertyVariables>
+                        <java.util.logging.config.file>jdklogging.properties</java.util.logging.config.file>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
             <plugin>
@@ -168,7 +168,7 @@
                         </goals>
                         <configuration>
                             <executable>${java.home}/bin/java</executable>
-                            <commandlineArgs>${runfx.args}</commandlineArgs>
+                            <commandlineArgs> -Djava.util.logging.config.file=./jdklogging.properties ${runfx.args}</commandlineArgs>
                         </configuration>
                     </execution>
                 </executions>  

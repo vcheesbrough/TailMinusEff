@@ -10,10 +10,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import tailminuseff.EventBusLogger;
 import tailminuseff.Guice3Module;
 import tailminuseff.StackTraceDumpingEventBusConsumer;
 import tailminuseff.config.Configuration;
-import static javafx.application.Application.launch;
 
 
 public class MainApp extends Application {
@@ -24,6 +24,7 @@ public class MainApp extends Application {
     public void start(Stage stage) throws Exception {
         Injector injector = Guice3Module.CreateInjector(stage);
 
+        injector.getInstance(EventBusLogger.class);
         injector.getInstance(StackTraceDumpingEventBusConsumer.class);
         injector.getInstance(UnhandledExceptionDialogReceiver.class);
 

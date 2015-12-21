@@ -1,5 +1,6 @@
 package tailminuseff.config;
 
+import com.sun.istack.internal.logging.Logger;
 import java.io.*;
 
 public class ConfigurationIO {
@@ -25,7 +26,7 @@ public class ConfigurationIO {
         try (FileOutputStream fos = new FileOutputStream(this.file)) {
             write(fos, c);
         }
-        System.out.println("Wrote config");
+        Logger.getLogger(this.getClass()).config("Wrote Config to file \"{0}\": {1}", new Object[]{file, c});
     }
 
     public void write(OutputStream out, Configuration config) throws IOException {
@@ -38,7 +39,7 @@ public class ConfigurationIO {
         try (FileInputStream fin = new FileInputStream(this.file)) {
             readInto(fin, c);
         }
-        System.out.println("read config");
+        Logger.getLogger(this.getClass()).config("Read Config from file \"{0}\": {1}", new Object[]{file, c});
     }
 
     public void readInto(InputStream in, Configuration destination) throws IOException, ClassNotFoundException {

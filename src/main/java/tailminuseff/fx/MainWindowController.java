@@ -6,8 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -17,16 +15,19 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javax.inject.Inject;
 import org.controlsfx.control.action.ActionUtils;
+import tailminuseff.UnhandledException;
 import tailminuseff.config.Configuration;
 import tailminuseff.fx.actions.ExitAction;
 import tailminuseff.fx.actions.OpenAction;
 
 public class MainWindowController implements Initializable {
+    private static final String FILEVIEW_FXMLPATH = "/fxml/FileView.fxml";
 
     private final Configuration config;
     private final FileViewControllerFactory fileViewFactory;
     private final ExitAction exitAction;
     private final OpenAction openAction;
+    private final EventBus eventBus;
 
     @FXML
     private MenuItem exitMenuItem;
@@ -43,11 +44,16 @@ public class MainWindowController implements Initializable {
         this.fileViewFactory = fileViewFactory;
         this.exitAction = exitAction;
         this.openAction = openAction;
+        this.eventBus = eventBus;
         eventBus.register(this);
     }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        final String os = System.getProperty("os.name");
+        if (os != null && os.startsWith("Mac")) {
+            menuBar.useSystemMenuBarProperty().set(true);
+        }
         ActionUtils.configureMenuItem(exitAction, exitMenuItem);
         ActionUtils.configureMenuItem(openAction, openMenuItem);
         this.config.getOpenFiles().forEach(f -> openFile(f));
@@ -60,12 +66,12 @@ public class MainWindowController implements Initializable {
     
     public void openFile(File newFile) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/FileView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(FILEVIEW_FXMLPATH));
             loader.setControllerFactory((Class<?> type) -> fileViewFactory.createForFile(newFile));
             final Tab tab = new Tab(newFile.getName(), loader.load());
             tabPane.getTabs().add(tab);
         } catch (IOException ex) {
-            Logger.getLogger(MainWindowController.class.getName()).log(Level.SEVERE, null, ex);
+            eventBus.post(new UnhandledException(ex, String.format("Could not load \"%s\"", FILEVIEW_FXMLPATH)));
         }
     }
 }
