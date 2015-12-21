@@ -9,10 +9,10 @@ import org.controlsfx.dialog.ExceptionDialog;
 import tailminuseff.UnhandledException;
 
 @Singleton
-public class ErrorDisplayController {
+public class UnhandledExceptionDialogReceiver {
 
     @Inject
-    public ErrorDisplayController(EventBus eventBus) {
+    public UnhandledExceptionDialogReceiver(EventBus eventBus) {
         eventBus.register(this);
     }
 

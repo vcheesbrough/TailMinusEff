@@ -13,17 +13,8 @@
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-              <MenuItem fx:id="exitMenuItem" mnemonicParsing="false" text="Close" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Edit">
-            <items>
-              <MenuItem mnemonicParsing="false" text="Delete" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Help">
-            <items>
-              <MenuItem mnemonicParsing="false" text="About" />
+                  <MenuItem fx:id="openMenuItem" mnemonicParsing="false" text="ACTION Open ..." />
+              <MenuItem fx:id="exitMenuItem" mnemonicParsing="false" text="ACTION Exit" />
             </items>
           </Menu>
         </menus>

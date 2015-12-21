@@ -9,6 +9,7 @@ import com.google.inject.Singleton;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
+import javafx.stage.Stage;
 import tailminuseff.config.Configuration;
 import tailminuseff.config.ConfigurationFactory;
 import tailminuseff.fx.FileViewController;
@@ -20,9 +21,19 @@ import tailminuseff.swing.MainFrame;
 
 public class Guice3Module extends AbstractModule {
 
-    public static Injector CreateInjector() {
-        final Injector injector = Guice.createInjector(new Guice3Module());
+    public static Injector CreateInjector(Stage stage) {
+        final Injector injector = Guice.createInjector(new Guice3Module(stage));
         return injector;
+    }
+
+    public static Injector CreateInjector() {
+        final Injector injector = Guice.createInjector(new Guice3Module(null));
+        return injector;
+    }
+    private final Stage stage;
+
+    private Guice3Module(Stage stage) {
+        this.stage = stage;
     }
 
     @Override
@@ -36,6 +47,12 @@ public class Guice3Module extends AbstractModule {
     @Singleton
     EventBus providesEventBus() {
         return new EventBus();
+    }
+
+    @Provides
+    @Singleton
+    Stage providesStage() {
+        return stage;
     }
 
     @Provides

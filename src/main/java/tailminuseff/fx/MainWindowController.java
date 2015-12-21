@@ -1,5 +1,7 @@
 package tailminuseff.fx;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -17,35 +19,46 @@ import javax.inject.Inject;
 import org.controlsfx.control.action.ActionUtils;
 import tailminuseff.config.Configuration;
 import tailminuseff.fx.actions.ExitAction;
+import tailminuseff.fx.actions.OpenAction;
 
 public class MainWindowController implements Initializable {
 
     private final Configuration config;
     private final FileViewControllerFactory fileViewFactory;
     private final ExitAction exitAction;
+    private final OpenAction openAction;
 
     @FXML
     private MenuItem exitMenuItem;
-
-    @Inject
-    public MainWindowController(Configuration config, FileViewControllerFactory fileViewFactory, ExitAction exitAction) {
-        this.config = config;
-        this.fileViewFactory = fileViewFactory;
-        this.exitAction = exitAction;
-    }
-
+    @FXML
+    private MenuItem openMenuItem;
     @FXML
     private MenuBar menuBar;
     @FXML
     private TabPane tabPane;
 
+    @Inject
+    public MainWindowController(Configuration config, FileViewControllerFactory fileViewFactory, ExitAction exitAction, OpenAction openAction, EventBus eventBus) {
+        this.config = config;
+        this.fileViewFactory = fileViewFactory;
+        this.exitAction = exitAction;
+        this.openAction = openAction;
+        eventBus.register(this);
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         ActionUtils.configureMenuItem(exitAction, exitMenuItem);
-        this.config.getOpenFiles().forEach(f -> OpenFile(f));
+        ActionUtils.configureMenuItem(openAction, openMenuItem);
+        this.config.getOpenFiles().forEach(f -> openFile(f));
     }
 
-    public void OpenFile(File newFile) {
+    @Subscribe
+    public void receiveFileOpenCommand(FileOpenCommand command) {
+        openFile(command.getFile());
+    }
+    
+    public void openFile(File newFile) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/FileView.fxml"));
             loader.setControllerFactory((Class<?> type) -> fileViewFactory.createForFile(newFile));
