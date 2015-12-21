@@ -1,5 +1,6 @@
 package tailminuseff.fx;
 
+import com.google.common.eventbus.EventBus;
 import com.google.inject.assistedinject.Assisted;
 import java.io.File;
 import java.net.URL;
@@ -36,12 +37,14 @@ public class FileViewController implements Initializable {
             Platform.runLater(() -> text.appendText(evt.getLine() + "\n"));
         }
     };
+    private final EventBus eventBus;
 
     @Inject
-    FileViewController(@Assisted File file, FileMonitorFactory fileMonitorFactory, @FileExectutor ExecutorService executorService) {
+    FileViewController(@Assisted File file, FileMonitorFactory fileMonitorFactory, @FileExectutor ExecutorService executorService, EventBus eventBus) {
         this.fileMonitor = fileMonitorFactory.createForFile(file);
         this.fileMonitor.addListener(monitorListener);
         this.executorService = executorService;
+        this.eventBus = eventBus;
     }
 
     @Override
