@@ -25,7 +25,6 @@ public class ApplicationExecutors {
         threadFactoryBuilder.setDaemon(true);
         threadFactoryBuilder.setPriority(Thread.MIN_PRIORITY);
         return new ExceptionNotifyingExecutorServiceDecorator(Executors.newCachedThreadPool(threadFactoryBuilder.build()), unhandledExceptionConsumer);
-
     }
 
     public ExecutorService createGeneralExecutorService() {
