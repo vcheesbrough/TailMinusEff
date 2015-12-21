@@ -5,6 +5,8 @@ import com.google.common.eventbus.Subscribe;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -28,6 +30,7 @@ public class MainWindowController implements Initializable {
     private final ExitAction exitAction;
     private final OpenAction openAction;
     private final EventBus eventBus;
+    private final List<File> openFiles = new ArrayList<>();
 
     @FXML
     private MenuItem exitMenuItem;
@@ -61,15 +64,19 @@ public class MainWindowController implements Initializable {
 
     @Subscribe
     public void receiveFileOpenCommand(FileOpenCommand command) {
-        openFile(command.getFile());
+        if (!openFiles.contains(command.getFile())) {
+            openFile(command.getFile());
+            config.setOpenFiles(openFiles);
+        }
     }
     
-    public void openFile(File newFile) {
+    private void openFile(File newFile) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(FILEVIEW_FXMLPATH));
             loader.setControllerFactory((Class<?> type) -> fileViewFactory.createForFile(newFile));
             final Tab tab = new Tab(newFile.getName(), loader.load());
             tabPane.getTabs().add(tab);
+            openFiles.add(newFile);
         } catch (IOException ex) {
             eventBus.post(new UnhandledException(ex, String.format("Could not load \"%s\"", FILEVIEW_FXMLPATH)));
         }

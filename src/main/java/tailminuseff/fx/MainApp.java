@@ -1,5 +1,6 @@
 package tailminuseff.fx;
 
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Injector;
 import java.awt.Rectangle;
 import javafx.application.Application;
@@ -13,6 +14,7 @@ import javafx.stage.Stage;
 import tailminuseff.EventBusLogger;
 import tailminuseff.Guice3Module;
 import tailminuseff.StackTraceDumpingEventBusConsumer;
+import tailminuseff.UnhandledException;
 import tailminuseff.config.Configuration;
 
 
@@ -23,6 +25,10 @@ public class MainApp extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         Injector injector = Guice3Module.CreateInjector(stage);
+
+        Thread.currentThread().setUncaughtExceptionHandler((Thread t, Throwable e) -> {
+            injector.getInstance(EventBus.class).post(new UnhandledException(e, t, "Unhandled exception"));
+        });
 
         injector.getInstance(EventBusLogger.class);
         injector.getInstance(StackTraceDumpingEventBusConsumer.class);
