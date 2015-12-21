@@ -13,6 +13,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javax.inject.Inject;
 import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.LineNumberFactory;
+import org.fxmisc.richtext.NavigationActions;
 import tailminuseff.FileExectutor;
 import tailminuseff.io.FileMonitor;
 import tailminuseff.io.FileMonitorFactory;
@@ -39,7 +41,10 @@ public class FileViewController implements Initializable {
 
         @Override
         public void lineRead(LineAddedEvent evt) {
-            Platform.runLater(() -> text.appendText(evt.getLine() + "\n"));
+            Platform.runLater(() -> {
+                text.appendText(text.getLength() > 0 ? "\n" + evt.getLine() : evt.getLine());
+                text.lineStart(NavigationActions.SelectionPolicy.CLEAR);
+            });
         }
     };
     @Inject
@@ -53,6 +58,8 @@ public class FileViewController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        text.setParagraphGraphicFactory(LineNumberFactory.get(text));
+        text.setWrapText(false);
         future = executorService.submit(fileMonitor);
     }
 
