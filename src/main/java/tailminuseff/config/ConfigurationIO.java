@@ -48,6 +48,7 @@ public class ConfigurationIO {
             destination.setMainWindowBounds(read.getMainWindowBounds());
             destination.setOpenDialogDirectory(read.getOpenDialogDirectory());
             destination.setOpenFiles(read.getOpenFiles());
+            destination.setSelectedFile(read.getSelectedFile());
         }
     }
 }

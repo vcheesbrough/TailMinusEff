@@ -60,8 +60,23 @@ public class MainWindowController implements Initializable {
         }
         ActionUtils.configureMenuItem(exitAction, exitMenuItem);
         ActionUtils.configureMenuItem(openAction, openMenuItem);
+
         if (this.config.getOpenFiles().size() > 0) {
             this.config.getOpenFiles().forEach(f -> openFile(f));
+            if (this.config.getSelectedFile() != null) {
+                tabPane.getTabs().stream()
+                        .filter((tab) -> this.config.getSelectedFile().equals(tab.getUserData()))
+                        .findFirst()
+                        .ifPresent(tabPane.getSelectionModel()::select);
+            }
+            tabPane.getTabs().forEach((tab) -> {
+                tab.selectedProperty().addListener((ignore, oldValue, tabSelected) -> {
+                    if (tabSelected) {
+                        config.setSelectedFile((File) tab.getUserData());
+                    }
+                });
+
+            });
         } else {
             this.openAction.exec(new ActionEvent());
         }
@@ -81,6 +96,8 @@ public class MainWindowController implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(FILEVIEW_FXMLPATH));
             loader.setControllerFactory((Class<?> type) -> fileViewFactory.createForFile(newFile));
             final Tab tab = new Tab(newFile.getName(), loader.load());
+            tab.setUserData(newFile);
+
             final FileViewController controller = loader.getController();
 
             tab.setOnClosed((evt) -> {

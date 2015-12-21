@@ -9,13 +9,13 @@ import javax.inject.Singleton;
 @Singleton
 public class Configuration implements Serializable {
 
+    public static final String SELECTED_FILE = "selectedFile";
+
     private static final String OPEN_FILES = "openFiles";
 
     private static final String OPEN_DIALOG_DIRECTORY = "openDialogDirectory";
 
     public static final String MAIN_WINDOW_BOUNDS = "mainWindowBounds";
-
-    private static final long serialVersionUID = 7438568253935637557L;
 
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
@@ -55,6 +55,18 @@ public class Configuration implements Serializable {
         propertyChangeSupport.firePropertyChange(OPEN_FILES, oldValue, this.openFiles);
     }
 
+    private File selectedFile;
+
+    public File getSelectedFile() {
+        return selectedFile;
+    }
+
+    public void setSelectedFile(File selectedFile) {
+        File oldSelectedFile = this.selectedFile;
+        this.selectedFile = selectedFile;
+        propertyChangeSupport.firePropertyChange(SELECTED_FILE, oldSelectedFile, selectedFile);
+    }
+
     public void addPropertyChangeListener(String property, PropertyChangeListener listener) {
         propertyChangeSupport.addPropertyChangeListener(property, listener);
     }
@@ -73,7 +85,7 @@ public class Configuration implements Serializable {
 
     @Override
     public String toString() {
-        return "Configuration{" + "mainWindowBounds=" + mainWindowBounds + ", openDialogDirectory=" + openDialogDirectory + ", openFiles=" + openFiles + '}';
+        return "Configuration{" + "selectedFile=" + selectedFile + ", mainWindowBounds=" + mainWindowBounds + ", openDialogDirectory=" + openDialogDirectory + ", openFiles=" + openFiles + '}';
     }
 
 }

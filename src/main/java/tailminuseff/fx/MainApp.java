@@ -78,16 +78,16 @@ public class MainApp extends Application {
                 Rectangle r = new Rectangle((int) stage.getX(), (int) stage.getY(), (int) stage.getWidth(), (int) stage.getHeight());
                 config.setMainWindowBounds(r);
             };
-            stage.setWidth(config.getMainWindowBounds().width);
-            stage.setHeight(config.getMainWindowBounds().height);
-            stage.setX(config.getMainWindowBounds().x);
-            stage.setY(config.getMainWindowBounds().y);
-
+            if (config.getMainWindowBounds() != null) {
+                stage.setWidth(config.getMainWindowBounds().width);
+                stage.setHeight(config.getMainWindowBounds().height);
+                stage.setX(config.getMainWindowBounds().x);
+                stage.setY(config.getMainWindowBounds().y);
+            }
             stage.xProperty().addListener(listener);
             stage.yProperty().addListener(listener);
             stage.widthProperty().addListener(listener);
             stage.heightProperty().addListener(listener);
-
         }
 
         public void Unbind() {
