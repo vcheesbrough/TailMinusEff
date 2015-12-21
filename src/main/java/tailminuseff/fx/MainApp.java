@@ -33,7 +33,7 @@ public class MainApp extends Application {
         injector.getInstance(EventBusLogger.class);
         injector.getInstance(StackTraceDumpingEventBusConsumer.class);
         injector.getInstance(UnhandledExceptionDialogReceiver.class);
-
+        
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/MainWindow.fxml"));
         loader.setControllerFactory(injector::getInstance);
 
@@ -56,6 +56,7 @@ public class MainApp extends Application {
         if (configBoundsBinder != null) {
             configBoundsBinder.Unbind();
         }
+        System.exit(0); // Not sure how to shutdown executors
     }
 
 

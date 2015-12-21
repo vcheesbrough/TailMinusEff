@@ -2,10 +2,12 @@ package tailminuseff.fx;
 
 import com.google.common.eventbus.EventBus;
 import com.google.inject.assistedinject.Assisted;
+import com.sun.istack.internal.logging.Logger;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -25,6 +27,9 @@ public class FileViewController implements Initializable {
 
     private final ExecutorService executorService;
     private final FileMonitor fileMonitor;
+    private final EventBus eventBus;
+    private final File file;
+    private Future<Void> future;
 
     private final FileMonitorListener monitorListener = new FileMonitorListener() {
         @Override
@@ -37,19 +42,22 @@ public class FileViewController implements Initializable {
             Platform.runLater(() -> text.appendText(evt.getLine() + "\n"));
         }
     };
-    private final EventBus eventBus;
-
     @Inject
     FileViewController(@Assisted File file, FileMonitorFactory fileMonitorFactory, @FileExectutor ExecutorService executorService, EventBus eventBus) {
         this.fileMonitor = fileMonitorFactory.createForFile(file);
         this.fileMonitor.addListener(monitorListener);
         this.executorService = executorService;
         this.eventBus = eventBus;
+        this.file = file;
     }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        executorService.submit(fileMonitor);
+        future = executorService.submit(fileMonitor);
     }
 
+    public void closed() {
+        future.cancel(true);
+        Logger.getLogger(this.getClass()).finer("Closed {0}", new Object[]{file});
+    }
 }

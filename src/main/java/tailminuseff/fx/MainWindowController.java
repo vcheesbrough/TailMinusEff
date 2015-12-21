@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -59,7 +60,12 @@ public class MainWindowController implements Initializable {
         }
         ActionUtils.configureMenuItem(exitAction, exitMenuItem);
         ActionUtils.configureMenuItem(openAction, openMenuItem);
-        this.config.getOpenFiles().forEach(f -> openFile(f));
+        if (this.config.getOpenFiles().size() > 0) {
+            this.config.getOpenFiles().forEach(f -> openFile(f));
+        } else {
+            this.openAction.exec(new ActionEvent());
+        }
+        
     }
 
     @Subscribe
@@ -75,10 +81,22 @@ public class MainWindowController implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(FILEVIEW_FXMLPATH));
             loader.setControllerFactory((Class<?> type) -> fileViewFactory.createForFile(newFile));
             final Tab tab = new Tab(newFile.getName(), loader.load());
+            final FileViewController controller = loader.getController();
+
+            tab.setOnClosed((evt) -> {
+                closeFile(newFile);
+                controller.closed();
+            });
+
             tabPane.getTabs().add(tab);
             openFiles.add(newFile);
         } catch (IOException ex) {
             eventBus.post(new UnhandledException(ex, String.format("Could not load \"%s\"", FILEVIEW_FXMLPATH)));
         }
+    }
+
+    private void closeFile(File existingFile) {
+        openFiles.remove(existingFile);
+        config.setOpenFiles(openFiles);
     }
 }
