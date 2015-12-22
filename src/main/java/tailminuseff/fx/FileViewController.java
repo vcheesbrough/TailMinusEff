@@ -9,10 +9,13 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.Button;
+import javafx.scene.layout.BorderPane;
 import javax.inject.Inject;
+import org.controlsfx.control.textfield.CustomTextField;
 import org.fxmisc.richtext.InlineStyleTextArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.NavigationActions;
@@ -26,7 +29,13 @@ import tailminuseff.io.LineAddedEvent;
 public class FileViewController implements Initializable {
 
     @FXML
-    private VBox textContainer;
+    private BorderPane textContainer;
+    @FXML
+    private CustomTextField searchText;
+    @FXML
+    private Button nextMatchButton;
+    @FXML
+    private Button prevMatchButton;
 
     private final InlineStyleTextArea<InlineTextStyle> textArea;
     private final ExecutorService executorService;
@@ -47,9 +56,11 @@ public class FileViewController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        textContainer.getChildren().add(this.textArea);
+        textContainer.setCenter(this.textArea);
         textArea.setParagraphGraphicFactory(LineNumberFactory.get(textArea));
         textArea.setWrapText(false);
+        textArea.setEditable(false);
+        textArea.autosize();
         future = executorService.submit(fileMonitor);
     }
 
@@ -72,6 +83,23 @@ public class FileViewController implements Initializable {
             });
         }
     };
+
+    @FXML
+    private void nextMatchClicked(ActionEvent event) {
+    }
+
+    @FXML
+    private void prevMatchClicked(ActionEvent event) {
+    }
+
+    @FXML
+    private void closeSearchClicked(ActionEvent event) {
+    }
+
+    @FXML
+    private void onActionSearchText(ActionEvent event) {
+        System.out.println("\"" + searchText.getText() + "\"");
+    }
 
     private static class InlineTextStyle {
 

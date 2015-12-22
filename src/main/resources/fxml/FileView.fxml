@@ -11,25 +11,33 @@
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
 
-<StackPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8.0.40" fx:controller="tailminuseff.fx.FileViewController">
-   <children>
-       <VBox fx:id="textContainer" VBox.vgrow="ALWAYS" />
-      <AnchorPane>
-         <children>
-            <HBox layoutY="323.0" spacing="5.0" style="-fx-background-color: grey;" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="0.0">
-               <children>
-                  <Button contentDisplay="TOP" mnemonicParsing="false" text="\\/" textAlignment="CENTER" />
-                  <Button mnemonicParsing="false" text="/\" textAlignment="CENTER" />
-                  <CustomTextField prefColumnCount="30">
+<StackPane pickOnBounds="false" stylesheets="@../styles/fx-styles.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tailminuseff.fx.FileViewController">
+    <children>
+        <BorderPane fx:id="textContainer" prefHeight="600.0" prefWidth="800.0" />
+        <AnchorPane pickOnBounds="false">
+            <children>
+                <CustomTextField id="search-text" fx:id="searchText" onAction="#onActionSearchText" pickOnBounds="false" prefColumnCount="30" AnchorPane.bottomAnchor="23.0" AnchorPane.rightAnchor="23.0">
                       <promptText>Search…</promptText>
+                      <left>
+                          <Label id="search-label">
+                     <padding>
+                        <Insets left="5.0" />
+                     </padding></Label>                            
+                      </left>
+                      <right>
+                          <HBox pickOnBounds="false">
+                              <padding>
+                                  <Insets top="4.0" />
+                              </padding>
+                              <Button fx:id="nextMatchButton" onAction="#nextMatchClicked" pickOnBounds="false" text="\\/" />
+                              <Button fx:id="prevMatchButton" onAction="#prevMatchClicked" pickOnBounds="false" text="/\" />
+                              <Button onAction="#closeSearchClicked" pickOnBounds="false" text="x" />
+                          </HBox>                    
+                      </right>
                   </CustomTextField>
-               </children>
-               <padding>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </padding>
-            </HBox>
-         </children>
-      </AnchorPane>
-   </children>
+            </children>
+        </AnchorPane>
+    </children>
 </StackPane>

@@ -5,3 +5,21 @@
 .mainFxmlClass {
 
 }
+
+#search-label {          
+    -fx-graphic: url("../icons/Search.png");
+}
+
+#search-text {
+    -fx-background-color: #f9f9f9;
+    -fx-padding: 8;
+    -fx-border-width: 0.5;
+    -fx-border-color: black;
+    -fx-border-radius: 100;
+    -fx-background-radius: 100;
+    -fx-effect: dropshadow(gaussian, black, 6, 0, 0, 0);
+}
+
+#searchButtonPane {
+    -fx-p: 10;
+}
