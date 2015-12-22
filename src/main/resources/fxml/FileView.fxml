@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.geometry.*?>
+<?import org.controlsfx.control.textfield.*?>
 <?import org.fxmisc.richtext.*?>
 <?import java.lang.*?>
 <?import java.net.*?>
@@ -8,5 +12,24 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
-<CodeArea fx:id="text" editable="false" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tailminuseff.fx.FileViewController" />
+<StackPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8.0.40" fx:controller="tailminuseff.fx.FileViewController">
+   <children>
+       <VBox fx:id="textContainer" VBox.vgrow="ALWAYS" />
+      <AnchorPane>
+         <children>
+            <HBox layoutY="323.0" spacing="5.0" style="-fx-background-color: grey;" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <Button contentDisplay="TOP" mnemonicParsing="false" text="\\/" textAlignment="CENTER" />
+                  <Button mnemonicParsing="false" text="/\" textAlignment="CENTER" />
+                  <CustomTextField prefColumnCount="30">
+                      <promptText>Search…</promptText>
+                  </CustomTextField>
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </HBox>
+         </children>
+      </AnchorPane>
+   </children>
+</StackPane>
