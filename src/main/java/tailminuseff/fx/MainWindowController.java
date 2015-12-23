@@ -12,12 +12,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javax.inject.Inject;
 import org.controlsfx.control.action.ActionUtils;
+import org.controlsfx.control.textfield.CustomTextField;
 import tailminuseff.UnhandledException;
 import tailminuseff.config.Configuration;
 import tailminuseff.fx.actions.ExitAction;
@@ -41,6 +43,16 @@ public class MainWindowController implements Initializable {
     private MenuBar menuBar;
     @FXML
     private TabPane tabPane;
+    @FXML
+    private CustomTextField searchText;
+    @FXML
+    private Button nextMatchButton;
+    @FXML
+    private Button prevMatchButton;
+    @FXML
+    private Button openButton;
+    @FXML
+    private Button exitButton;
 
     @Inject
     public MainWindowController(Configuration config, FileViewControllerFactory fileViewFactory, ExitAction exitAction, OpenAction openAction, EventBus eventBus) {
@@ -60,6 +72,8 @@ public class MainWindowController implements Initializable {
         }
         ActionUtils.configureMenuItem(exitAction, exitMenuItem);
         ActionUtils.configureMenuItem(openAction, openMenuItem);
+        ActionUtils.configureButton(openAction, openButton);
+        ActionUtils.configureButton(exitAction, exitButton);
 
         if (this.config.getOpenFiles().size() > 0) {
             this.config.getOpenFiles().forEach(f -> openFile(f));
@@ -115,5 +129,21 @@ public class MainWindowController implements Initializable {
     private void closeFile(File existingFile) {
         openFiles.remove(existingFile);
         config.setOpenFiles(openFiles);
+    }
+
+    @FXML
+    private void nextMatchClicked(ActionEvent event) {
+    }
+
+    @FXML
+    private void prevMatchClicked(ActionEvent event) {
+    }
+
+    @FXML
+    private void closeSearchClicked(ActionEvent event) {
+    }
+
+    @FXML
+    private void onActionSearchText(ActionEvent event) {
     }
 }

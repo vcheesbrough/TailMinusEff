@@ -16,28 +16,5 @@
 <StackPane pickOnBounds="false" stylesheets="@../styles/fx-styles.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tailminuseff.fx.FileViewController">
     <children>
         <BorderPane fx:id="textContainer" prefHeight="600.0" prefWidth="800.0" />
-        <AnchorPane pickOnBounds="false">
-            <children>
-                <CustomTextField id="search-text" fx:id="searchText" onAction="#onActionSearchText" pickOnBounds="false" prefColumnCount="30" AnchorPane.bottomAnchor="23.0" AnchorPane.rightAnchor="23.0">
-                      <promptText>Search…</promptText>
-                      <left>
-                          <Label id="search-label">
-                     <padding>
-                        <Insets left="5.0" />
-                     </padding></Label>                            
-                      </left>
-                      <right>
-                          <HBox pickOnBounds="false">
-                              <padding>
-                                  <Insets top="4.0" />
-                              </padding>
-                              <Button fx:id="nextMatchButton" onAction="#nextMatchClicked" pickOnBounds="false" text="\\/" />
-                              <Button fx:id="prevMatchButton" onAction="#prevMatchClicked" pickOnBounds="false" text="/\" />
-                              <Button onAction="#closeSearchClicked" pickOnBounds="false" text="x" />
-                          </HBox>                    
-                      </right>
-                  </CustomTextField>
-            </children>
-        </AnchorPane>
     </children>
 </StackPane>
