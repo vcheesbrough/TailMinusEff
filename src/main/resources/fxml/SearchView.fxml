@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+<?import org.controlsfx.control.textfield.*?>
+
+<AnchorPane id="AnchorPane" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tailminuseff.fx.SearchViewController">
+    <stylesheets>
+        <URL value="@/styles/fx-styles.css"/>
+    </stylesheets>
+    <CustomTextField id="search-text" fx:id="searchText" focusTraversable="false" onAction="#onActionSearchText" pickOnBounds="false" prefColumnCount="20" promptText="Search…" ButtonBar.buttonData="RIGHT" ButtonBar.buttonUniformSize="false">
+        <left>
+            <Label id="search-label">
+                <padding>
+                    <Insets left="5.0" />
+                </padding>
+            </Label>
+        </left>
+        <right>
+            <HBox pickOnBounds="false">
+                <padding>
+                    <Insets top="4.0" />
+                </padding>
+                <children>
+                    <Button fx:id="nextMatchButton" focusTraversable="false" onAction="#nextMatchClicked" pickOnBounds="false" text="\\/" />
+                    <Button fx:id="prevMatchButton" focusTraversable="false" onAction="#prevMatchClicked" pickOnBounds="false" text="/\" />
+                </children>
+            </HBox>
+        </right>
+    </CustomTextField>
+</AnchorPane>

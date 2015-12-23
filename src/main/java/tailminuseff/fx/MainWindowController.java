@@ -19,7 +19,6 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javax.inject.Inject;
 import org.controlsfx.control.action.ActionUtils;
-import org.controlsfx.control.textfield.CustomTextField;
 import tailminuseff.UnhandledException;
 import tailminuseff.config.Configuration;
 import tailminuseff.fx.actions.ExitAction;
@@ -43,12 +42,6 @@ public class MainWindowController implements Initializable {
     private MenuBar menuBar;
     @FXML
     private TabPane tabPane;
-    @FXML
-    private CustomTextField searchText;
-    @FXML
-    private Button nextMatchButton;
-    @FXML
-    private Button prevMatchButton;
     @FXML
     private Button openButton;
     @FXML
@@ -129,21 +122,5 @@ public class MainWindowController implements Initializable {
     private void closeFile(File existingFile) {
         openFiles.remove(existingFile);
         config.setOpenFiles(openFiles);
-    }
-
-    @FXML
-    private void nextMatchClicked(ActionEvent event) {
-    }
-
-    @FXML
-    private void prevMatchClicked(ActionEvent event) {
-    }
-
-    @FXML
-    private void closeSearchClicked(ActionEvent event) {
-    }
-
-    @FXML
-    private void onActionSearchText(ActionEvent event) {
     }
 }

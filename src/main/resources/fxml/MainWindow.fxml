@@ -29,27 +29,7 @@
             <buttons>
                 <Button fx:id="openButton" focusTraversable="false" mnemonicParsing="false" ButtonBar.buttonData="LEFT" ButtonBar.buttonUniformSize="false" />
                 <Button fx:id="exitButton" focusTraversable="false" mnemonicParsing="false" ButtonBar.buttonData="LEFT" ButtonBar.buttonUniformSize="false" />
-                <CustomTextField id="search-text" fx:id="searchText" focusTraversable="false" onAction="#onActionSearchText" pickOnBounds="false" prefColumnCount="20" promptText="Search…" ButtonBar.buttonData="RIGHT" ButtonBar.buttonUniformSize="false">
-                    <left>
-                        <Label id="search-label">
-                            <padding>
-                                <Insets left="5.0" />
-                            </padding>
-                        </Label>
-                    </left>
-                    <right>
-                        <HBox pickOnBounds="false">
-                            <padding>
-                                <Insets top="4.0" />
-                            </padding>
-                            <children>
-                                <Button fx:id="nextMatchButton" focusTraversable="false" onAction="#nextMatchClicked" pickOnBounds="false" text="\\/" />
-                                <Button fx:id="prevMatchButton" focusTraversable="false" onAction="#prevMatchClicked" pickOnBounds="false" text="/\" />
-                                <Button focusTraversable="false" onAction="#closeSearchClicked" pickOnBounds="false" text="x" />
-                            </children>
-                        </HBox>
-                    </right>
-                </CustomTextField>
+                <fx:include source="SearchView.fxml"  ButtonBar.buttonData="RIGHT" ButtonBar.buttonUniformSize="false"/>
             </buttons>
         </ButtonBar>
         <TabPane fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="ALL_TABS" VBox.vgrow="ALWAYS" />
