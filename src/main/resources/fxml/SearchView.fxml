@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.effect.*?>
 <?import java.lang.*?>
 <?import java.net.*?>
 <?import java.util.*?>
@@ -9,11 +10,11 @@
 <?import javafx.geometry.*?>
 <?import org.controlsfx.control.textfield.*?>
 
-<AnchorPane id="AnchorPane" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tailminuseff.fx.SearchViewController">
+<AnchorPane id="AnchorPane" prefWidth="320.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tailminuseff.fx.SearchViewController">
     <stylesheets>
-        <URL value="@/styles/fx-styles.css"/>
+        <URL value="@../styles/fx-styles.css" />
     </stylesheets>
-    <CustomTextField id="search-text" fx:id="searchText" focusTraversable="false" onAction="#onActionSearchText" pickOnBounds="false" prefColumnCount="20" promptText="Search…" ButtonBar.buttonData="RIGHT" ButtonBar.buttonUniformSize="false">
+    <CustomTextField id="search-text" fx:id="searchText" focusTraversable="false" maxWidth="-Infinity" minWidth="-Infinity" onAction="#onActionSearchText" pickOnBounds="false" prefColumnCount="0" prefWidth="320.0" promptText="Search…" ButtonBar.buttonData="RIGHT" ButtonBar.buttonUniformSize="false">
         <left>
             <Label id="search-label">
                 <padding>
