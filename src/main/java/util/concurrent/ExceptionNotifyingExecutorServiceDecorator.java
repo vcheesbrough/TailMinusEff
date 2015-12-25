@@ -6,6 +6,5 @@ public class ExceptionNotifyingExecutorServiceDecorator extends AbstractExceptio
 
     public ExceptionNotifyingExecutorServiceDecorator(ExecutorService delegate, UnhandledExceptionConsumer uncaughtConsumer) {
         super(delegate, uncaughtConsumer);
-        // TODO Auto-generated constructor stub
     }
 }

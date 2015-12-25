@@ -1,6 +1,5 @@
 package tailminuseff.fx;
 
-import com.google.common.eventbus.EventBus;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
@@ -13,6 +12,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
 import javax.inject.Inject;
 import org.controlsfx.control.textfield.CustomTextField;
+import tailminuseff.fx.model.InlineTextStyle;
+import tailminuseff.fx.model.UserSearchModel;
 
 public class SearchViewController implements Initializable {
 
@@ -22,19 +23,25 @@ public class SearchViewController implements Initializable {
     private Button nextMatchButton;
     @FXML
     private Button prevMatchButton;
-    private final EventBus eventBus;
+
     private final PseudoClass invalidRegexPseudoClass;
+    private final UserSearchModel searchModel;
 
     @Inject
-    public SearchViewController(EventBus eventBus) {
+    public SearchViewController(UserSearchModel searchModel) {
         invalidRegexPseudoClass = PseudoClass.getPseudoClass("invalid-regex");
-        this.eventBus = eventBus;
+        this.searchModel = searchModel;
+        this.searchModel.setStyle(new InlineTextStyle("red", "yellow"));
     }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         searchText.textProperty().addListener((ignored, oldValue, newValue) -> {
-            attemptNotifyRegex(newValue);
+            if ("".equals(newValue)) {
+                searchModel.setPattern(null);
+            } else {
+                attemptNotifyRegex(newValue);
+            }
         });
         nextMatchButton.setVisible(false);
         prevMatchButton.setVisible(false);
@@ -54,10 +61,11 @@ public class SearchViewController implements Initializable {
 
     private void attemptNotifyRegex(String newValue) {
         try {
-            eventBus.post(new UserSearchCommand(Pattern.compile(newValue)));
+            searchModel.setPattern(Pattern.compile(newValue));
             searchText.pseudoClassStateChanged(invalidRegexPseudoClass, false);
             searchText.setTooltip(null);
         } catch (PatternSyntaxException ex) {
+            searchModel.setPattern(null);
             searchText.setTooltip(new Tooltip(ex.getMessage()));
             searchText.pseudoClassStateChanged(invalidRegexPseudoClass, true);
         }

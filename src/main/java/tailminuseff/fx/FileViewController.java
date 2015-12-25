@@ -1,6 +1,5 @@
 package tailminuseff.fx;
 
-import com.google.common.eventbus.EventBus;
 import com.google.inject.assistedinject.Assisted;
 import com.sun.istack.internal.logging.Logger;
 import java.io.File;
@@ -19,7 +18,9 @@ import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.NavigationActions;
 import tailminuseff.FileExectutor;
 import tailminuseff.fx.model.InlineTextStyle;
+import tailminuseff.fx.model.StyledLine;
 import tailminuseff.fx.model.StyledLineModel;
+import tailminuseff.fx.model.UserSearchModel;
 import tailminuseff.io.FileMonitor;
 import tailminuseff.io.FileMonitorFactory;
 
@@ -31,19 +32,20 @@ public class FileViewController implements Initializable {
     private final InlineStyleTextArea<InlineTextStyle> textArea = new InlineStyleTextArea<>(new InlineTextStyle(), (style) -> style.toCSS());
     private final ExecutorService executorService;
     private final FileMonitor fileMonitor;
-    private final EventBus eventBus;
     private final File file;
     private Future<Void> future;
-    private final StyledLineModel model = new StyledLineModel();
+    private final StyledLineModel model;
+    private final UserSearchModel searchModel;
 
     @Inject
-    FileViewController(@Assisted File file, FileMonitorFactory fileMonitorFactory, @FileExectutor ExecutorService executorService, EventBus eventBus) {
+    FileViewController(@Assisted File file, FileMonitorFactory fileMonitorFactory, @FileExectutor ExecutorService executorService, StyledLineModel model, UserSearchModel searchModel) {
+        this.model = model;
         this.fileMonitor = fileMonitorFactory.createForFile(file);
         this.fileMonitor.addListener(model.getMonitorListener());
         this.executorService = executorService;
-        this.eventBus = eventBus;
         this.file = file;
         this.model.linesProperty().addListener(linesListener);
+        this.searchModel = searchModel;
     }
 
     @Override
@@ -61,20 +63,45 @@ public class FileViewController implements Initializable {
         Logger.getLogger(this.getClass()).finer("Closed {0}", new Object[]{file});
     }
 
-    private final ListChangeListener<String> linesListener = (ListChangeListener.Change<? extends String> change) -> {
-        while (change.next()) {
-            if (change.wasAdded()) {
-                change.getAddedSubList().stream().forEach((line) -> {
-                    Platform.runLater(() -> {
-                        textArea.appendText(textArea.getLength() > 0 ? "\n" + line : line);
-                        textArea.lineStart(NavigationActions.SelectionPolicy.CLEAR);
-                    });
-                });
-            } else if (change.wasRemoved()) {
-                Platform.runLater(() -> textArea.clear());
-            } else {
-                throw new UnsupportedOperationException();
-            }
+    private final ListChangeListener<StyledLine> linesListener = new ListChangeListener<StyledLine>() {
+        @Override
+        public void onChanged(ListChangeListener.Change<? extends StyledLine> change) {
+            Platform.runLater(() -> {
+                while (change.next()) {
+                    if (change.wasReplaced()) {
+                        change.getRemoved().stream().forEach((line) -> {
+                            line.getStyledSegments().stream().forEach((styleSegment) -> {
+                                textArea.clearStyle(line.getLineNumber(),
+                                        styleSegment.getFirstCharacter(),
+                                        styleSegment.getLastCharacter() + 1);
+                            });
+                        });
+                        change.getAddedSubList().stream().forEach((line) -> {
+                            applyStyles(line);
+                        });
+                    } else if (change.wasAdded()) {
+                        change.getAddedSubList().stream().forEach((line) -> {
+                            textArea.appendText(textArea.getLength() > 0 ? "\n" + line.getText() : line.getText());
+                            textArea.lineStart(NavigationActions.SelectionPolicy.CLEAR);
+                            applyStyles(line);
+                        });
+                    } else if (change.wasRemoved()) {
+                        Platform.runLater(() -> textArea.clear());
+                    } else {
+                        throw new UnsupportedOperationException();
+                    }
+                }
+            });
         }
     };
+
+    private void applyStyles(StyledLine line) {
+        line.getStyledSegments().stream().forEach((styleSegment) -> {
+            textArea.setStyle(
+                    line.getLineNumber(),
+                    styleSegment.getFirstCharacter(),
+                    styleSegment.getLastCharacter() + 1,
+                    searchModel.getStyle());
+        });
+    }
 }
